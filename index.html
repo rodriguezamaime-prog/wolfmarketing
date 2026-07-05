@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <!-- AÑADIMOS SUPABASE AQUI -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; margin: 0; line-height: 1.5; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
@@ -549,7 +551,7 @@
             { id: "sm5", title: "5. Neuromarketing", color: "bg-violet-600", icon: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z", q: [{ id: "q17", vital: false, text: "17. Estímulo sensorial dominante", opts: ["Visual", "Auditivo", "Olfativo", "Táctil"] }, { id: "q18", vital: false, text: "18. Reacción emocional a colores", opts: ["Positiva", "Neutra", "Negativa"] }, { id: "q19", vital: false, text: "19. Engagement con displays", opts: ["Alto", "Medio", "Bajo"] }, { id: "q20", vital: false, text: "20. Respuesta a música/sonidos", opts: ["Agradable", "Indiferente", "Molesto"] }] },
             { id: "sm6", title: "6. Branding", color: "bg-violet-500", icon: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01", q: [{ id: "q21", vital: true, text: "21. Reconocimiento de marca", opts: ["Sí", "No", "Parcial"] }, { id: "q22", vital: false, text: "22. Nivel de fidelidad", opts: ["Nuevo", "Ocasional", "Recurrente", "Leal"] }, { id: "q23", vital: false, text: "23. Reacción a promociones", opts: ["Interesado", "Indiferente", "Crítico"] }, { id: "q24", vital: false, text: "24. Identificación con la marca", opts: ["Alta", "Media", "Baja"] }] },
             { id: "sm7", title: "7. Pricing Psicológico", color: "bg-purple-600", icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", q: [{ id: "q25", vital: true, text: "25. Reacción a precios visibles", opts: ["Aceptación", "Duda", "Rechazo"] }, { id: "q26", vital: false, text: "26. Sensibilidad a descuentos", opts: ["Alta", "Media", "Baja"] }, { id: "q27", vital: false, text: "27. Actitud frente a combos/2x1", opts: ["Interesado", "Indiferente", "Crítico"] }, { id: "q28", vital: true, text: "28. Percepción valor vs. precio", opts: ["Adecuado", "Alto", "Bajo"] }] },
-            { id: "sm8", title: "8. Experiencia (CX)", color: "bg-purple-500", icon: "M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z", q: [{ id: "q29", vital: false, text: "29. Reacción al tiempo de espera", opts: ["Paciencia", "Ansiedad", "Irritación"] }, { id: "q30", vital: true, text: "30. Nivel de satisfacción al salir", opts: ["Alta", "Media", "Baja"] }, { id: "q31", vital: true, text: "31. Percepción del trato recibido", opts: ["Cordial", "Neutro", "Frío", "Negativo"] }, { id: "q32", vital: true, text: "32. Intención de volver", opts: ["Alta", "Media", "Baja"] }] },
+            { id: "sm8", title: "8. Experiencia (CX)", color: "bg-purple-500", icon: "M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z", q: [{ id: "q29", vital: false, text: "29. Reacción al tiempo de espera", opts: ["Paciencia", "Ansiedad", "Irritación"] }, { id: "q30", vital: true, text: "30. Nivel de satisfaction al salir", opts: ["Alta", "Media", "Baja"] }, { id: "q31", vital: true, text: "31. Percepción del trato recibido", opts: ["Cordial", "Neutro", "Frío", "Negativo"] }, { id: "q32", vital: true, text: "32. Intención de volver", opts: ["Alta", "Media", "Baja"] }] },
             { id: "sm9", title: "9. Análisis Digital", color: "bg-orange-500", icon: "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9", q: [{ id: "q33", vital: false, text: "33. Plataforma digital más usada", opts: ["Facebook", "Instagram", "TikTok", "Google"] }, { id: "q34", vital: false, text: "34. Nivel de interacción en redes", opts: ["Alta", "Media", "Baja"] }, { id: "q35", vital: false, text: "35. Percepción emocional en comentarios", opts: ["Positiva", "Neutra", "Negativa"] }, { id: "q36", vital: false, text: "36. Tipo de contenido que más atrae", opts: ["Promociones", "Testimonios", "Videos", "Memes"] }] },
             { id: "sm10", title: "10. CX Journey", color: "bg-orange-400", icon: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7", q: [{ id: "q37", vital: true, text: "37. Punto de fricción más evidente", opts: ["Entrada", "Espera", "Interacción", "Salida"] }, { id: "q38", vital: true, text: "38. Momento de mayor satisfaction", opts: ["Recepción", "Servicio", "Pago", "Ambiente"] }, { id: "q39", vital: false, text: "39. Emoción predominante", opts: ["Confianza", "Ansiedad", "Alegría", "Indiferencia"] }, { id: "q40", vital: true, text: "40. Probabilidad de recomendar", opts: ["Alta", "Media", "Baja"] }] },
             { id: "sm11", title: "11. Proxémica Espacial", color: "bg-pink-500", icon: "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4", q: [{ id: "q41", vital: false, text: "41. Reacción a la densidad espacial", opts: ["Abandona la zona", "Se aparta/encoge", "Navega fluido", "Evita el pasillo"] }, { id: "q42", vital: true, text: "42. Respuesta física ante obstáculos", opts: ["Desorientación", "Pausa para escanear", "Trayectoria ininterrumpida", "Irritación visible"] }, { id: "q43", vital: false, text: "43. Uso del mobiliario de descanso", opts: ["Ignora/Se queda de pie", "Usa brevemente", "Se relaja prolongadamente", "Incomodidad postural"] }, { id: "q44", vital: false, text: "44. Velocidad del paso (Pacing)", opts: ["Acelerado/Prisa", "Pausado/Exploratorio", "Errático", "Detenido completamente"] }] },
@@ -654,13 +656,19 @@
         }
 
         // =========================================================================================
-        // FIX 2 APLICADO: GUARDAR DATOS (GLOBAL Y CON CONFIRMACIÓN)
+        // FIX 2 APLICADO: GUARDAR DATOS (GLOBAL Y EN SUPABASE)
         // =========================================================================================
-        window.saveAllData = function() {
+        window.saveAllData = async function() {
             const industrySelect = document.getElementById('industry-selector');
             let name = document.getElementById('client-name').value.trim();
-            if (!industrySelect.value || !name) { alert("⚠️ Completa al menos Razón Social y Tipo de Comercio en la Ficha Técnica para guardar la sesión."); return; }
             let nit = document.getElementById('client-nit').value.trim();
+
+            if (!industrySelect.value || !name) { 
+                alert("⚠️ Completa al menos Razón Social y Tipo de Comercio en la Ficha Técnica para guardar la sesión."); 
+                return; 
+            }
+
+            // 1. GUARDADO LOCAL (Para que no pierdas nada en tu PC)
             let db = WolfDataBus.getDB();
             if(!db[name]) db[name] = { name: name, nit: nit };
             db[name].name = name; db[name].nit = nit;
@@ -668,7 +676,49 @@
             saveM1Data(true); 
             saveM2Data(true); 
             if(typeof window.saveDataM4 === 'function') window.saveDataM4();
-            alert("✅ ¡Todos los datos han sido guardados exitosamente en la memoria del sistema!");
+
+            // 2. GUARDADO EN SUPABASE (Conexión a la Nube)
+            // 🚨 IMPORTANTE: DEBES REEMPLAZAR ESTOS DOS VALORES CON LOS DE TU PROYECTO SUPABASE 🚨
+            const supabaseUrl ='https://lujjfbknidaioocmcvhc.supabase.co'; // <--- PEGA TU URL AQUI
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1ampmYmtuaWRhaW9vY21jdmhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxOTcxMjIsImV4cCI6MjA5ODc3MzEyMn0.JpWNK6bJYIFrFGHjdhF_whhiovStOmqdFtaHf4kJoWo'; // <--- PEGA TU LLAVE AQUI
+            const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+            try {
+                // Cambiar visualmente el botón para que sepas que está procesando
+                const btnSave = document.querySelector('button[onclick="saveAllData()"]');
+                const btnText = btnSave.innerHTML;
+                btnSave.innerHTML = "⏳ ENVIANDO A LA NUBE...";
+                btnSave.disabled = true;
+
+                // Extraemos el texto de la industria seleccionada
+                let indText = industrySelect.options[industrySelect.selectedIndex].text;
+
+                // Enviamos los datos exactos a tu tabla 'clientes'
+                const { data, error } = await supabaseClient
+                    .from('clientes')
+                    .insert([
+                        { 
+                            nombre: name, 
+                            nit: nit, 
+                            industria: indText
+                        }
+                    ]);
+
+                if (error) {
+                    console.error("Error de Supabase:", error);
+                    alert("❌ Error de la base de datos: " + error.message);
+                } else {
+                    alert("✅ ¡Datos guardados exitosamente en Local y en SUPABASE!");
+                }
+
+                // Restaurar el botón a la normalidad
+                btnSave.innerHTML = btnText;
+                btnSave.disabled = false;
+
+            } catch (err) {
+                console.error("Error general de conexión:", err);
+                alert("❌ Falló la conexión con internet o con la base de datos.");
+            }
         }
 
         // =========================================================================================
