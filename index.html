@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wolf Marketing - Core System V24.3 (Master Unificado)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; margin: 0; line-height: 1.5; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
+        
+        .title-main { font-size: 1.15rem; font-weight: 900; color: #0f172a; text-transform: uppercase; letter-spacing: 0.02em; }
+        .subtitle-label { font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.25rem; display: block;}
+        
+        .input-light { background-color: #ffffff; color: #1e293b; border: 1px solid #cbd5e1; transition: all 0.2s ease; border-radius: 0.375rem; font-size: 12px; font-weight: 600; padding: 8px 12px; }
+        .input-light:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+        .input-light:read-only { background-color: #f1f5f9; color: #64748b; cursor: not-allowed; border-color: #e2e8f0; }
+        
+        .tab-btn { transition: all 0.2s ease; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center; font-size: 10px; padding: 12px 16px; }
+        .tab-inactive { background-color: #ffffff; color: #64748b; border-bottom: 3px solid transparent; }
+        .tab-inactive:hover { background-color: #f8fafc; color: #0f172a; }
+        .active-module { background-color: #2563eb; color: #ffffff; border-bottom: 3px solid #1d4ed8; }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+        select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1em; padding-right: 2rem !important; }
+        
+        .tile-card { transition: all 0.2s ease; }
+        .tile-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        
+        .radio-target:checked + div { color: white; border-color: transparent; }
+        .radio-val-1:checked + div { background-color: #ef4444; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4); } 
+        .radio-val-2:checked + div { background-color: #eab308; box-shadow: 0 2px 4px rgba(234, 179, 8, 0.4); } 
+        .radio-val-3:checked + div { background-color: #10b981; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.4); } 
+        .radio-target-m3:checked + div { background-color: #fef08a; border-color: #eab308; color: #854d0e; font-weight: 900; box-shadow: inset 0 0 0 1px #eab308; }
+        
+        /* ESTILOS M4 KANBAN & TABLA */
+        .color-cumplida { background-color: #10b981; } .text-cumplida { color: #10b981; }
+        .color-proceso { background-color: #f59e0b; }  .text-proceso { color: #f59e0b; }
+        .color-vencida { background-color: #ef4444; }  .text-vencida { color: #ef4444; }
+        .color-fail { background-color: #0f172a; }     .text-fail { color: #0f172a; }
+        .color-pendiente { background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; }
+        
+        .workload-bar { height: 18px; border-radius: 4px; display: flex; overflow: hidden; background-color: #e2e8f0; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); margin-bottom: 8px;}
+        .segment { display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; color: white; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; white-space: nowrap; }
+        .gauge-container { position: relative; width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-top: 4px; }
+        .gauge-fill { height: 100%; transition: width 0.5s ease, background-color 0.5s ease; border-radius: 4px; }
+        
+        .table-compact { table-layout: fixed; width: 100%; min-width: 1400px; }
+        .input-cell { background: transparent; border: 1px solid transparent; width: 100%; padding: 4px 6px; border-radius: 4px; font-size: 10px; transition: all 0.2s; color: #334155; font-weight: 500; height: 100%;}
+        .textarea-cell { background: transparent; border: 1px solid transparent; width: 100%; padding: 4px 6px; border-radius: 4px; font-size: 10px; transition: all 0.2s; color: #334155; resize: none; overflow: hidden; line-height: 1.4; font-weight: 500;}
+        .input-cell:hover, .textarea-cell:hover, .input-cell:focus, .textarea-cell:focus { background: white; border-color: #cbd5e1; outline: none; box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.05); }
+        .input-modal { border: 1px solid #cbd5e1; border-radius: 0.375rem; padding: 0.4rem 0.6rem; font-size: 0.8rem; width: 100%; transition: all 0.2s; color: #334155; }
+        .input-modal:focus { border-color: #0f172a; outline: none; box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1); }
+        
+        .table-header { font-size: 8.5px; font-weight: 900; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; padding: 12px 8px; background-color: #f1f5f9; border-bottom: 2px solid #cbd5e1; text-align: left; }
+        .table-row { border-bottom: 1px solid #e2e8f0; transition: background-color 0.2s; background-color: #ffffff;}
+        .table-row:hover { background-color: #f8fafc; }
+        
+        .status-select { font-size: 9px; font-weight: 900; border-radius: 4px; padding: 6px 4px; appearance: none; cursor: pointer; border: 1px solid transparent; outline: none; text-align: center; width: 100%; text-transform: uppercase; transition: all 0.2s;}
+        .status-opt-pendiente { background-color: #ffffff; color: #475569; border-color: #cbd5e1; }
+        .status-opt-proceso { background-color: #fef3c7; color: #d97706; border-color: #fde68a; }
+        .status-opt-cumplido { background-color: #d1fae5; color: #059669; border-color: #a7f3d0; }
+        .status-opt-nocumplido { background-color: #0f172a; color: #f8fafc; border-color: #334155; }
+        
+        .kanban-column { transition: background-color 0.2s ease; border-radius: 0.5rem; border: 2px dashed transparent;}
+        .kanban-column.drag-over { background-color: #e2e8f0; border-color: #94a3b8; }
+        .kanban-card { cursor: grab; transition: transform 0.1s ease, box-shadow 0.2s ease; }
+        .kanban-card:active { cursor: grabbing; transform: scale(0.98); }
+        .kanban-card.dragging { opacity: 0.4; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2); }
+        .tooltip .tooltip-text { visibility: hidden; width: 200px; background-color: #0f172a; color: #fff; text-align: center; border-radius: 4px; padding: 6px; position: absolute; z-index: 50; bottom: 125%; right: 0; opacity: 0; transition: opacity 0.3s; font-size: 9px; font-weight: 500; white-space: normal; line-height: 1.3;}
+        .tooltip:hover .tooltip-text { visibility: visible; opacity: 1; }
+        .gauge-circle { transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body>
+
+    <datalist id="saved-companies"></datalist>
+
+    <header class="bg-white border-b border-slate-200 shadow-sm shrink-0 z-50 sticky top-0">
+        <div class="flex flex-col md:flex-row justify-between items-center bg-white border-b border-slate-200">
+            <div class="flex items-center gap-3 px-6 py-2">
+                <svg class="w-6 h-6 text-blue-600" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 85 L20 45 L35 15 L45 35 L50 25 L55 35 L65 15 L80 45 Z" fill="#cbd5e1" stroke="currentColor" stroke-width="1.5"/><path d="M50 85 L40 55 L50 25 L60 55 Z" fill="#2563eb" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                <h1 class="text-base font-black text-slate-900 tracking-tight uppercase">Wolf Marketing</h1>
+            </div>
+            <div class="flex overflow-x-auto custom-scrollbar w-full md:w-auto">
+                <button id="nav-m1" onclick="switchRouting('m1')" class="tab-btn active-module border-l border-slate-200">M1: Diagnóstico</button>
+                <button id="nav-m2" onclick="switchRouting('m2')" class="tab-btn tab-inactive border-l border-slate-200">M2: Perfil Competitivo</button>
+                <button id="nav-m3" onclick="switchRouting('m3')" class="tab-btn tab-inactive border-l border-slate-200">M3: Etnografía</button>
+                <button id="nav-m4" onclick="switchRouting('m4')" class="tab-btn tab-inactive border-l border-slate-200">M4: Plan de Acción</button>
+            </div>
+        </div>
+        
+        <section id="master-ficha" class="bg-slate-50 px-6 py-4 shadow-sm shrink-0">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest">Ficha Técnica de la Organización</h2>
+                <div class="flex gap-3 items-center">
+                    <button onclick="clearAllSystemData()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded text-[10px] font-black uppercase tracking-wider transition-colors shadow-sm">Limpiar Sesión</button>
+                    <button onclick="saveAllData()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded text-[10px] font-black uppercase shadow-sm transition-colors flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg> Guardar Datos</button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="subtitle-label">TIPO DE COMERCIO (RUBRO) <span class="text-red-500">*</span></label>
+                    <select id="industry-selector" onchange="checkIndustryType()" class="input-light w-full cursor-pointer text-slate-800">
+                        <option value="" disabled selected>Seleccione la industria...</option>
+                        <option value="moda">1. Moda, Calzado y Accesorios</option><option value="tecnologia">2. Tecnología y Electrodomésticos</option><option value="vehiculos">3. Automotriz (Vehículos/Motos)</option><option value="ferreteria">4. Ferreterías y Construcción</option><option value="minimercado">5. Minimercados y Fruver</option><option value="gastronomia">6. Gastronomía (Restaurantes)</option><option value="nocturno">7. Ocio Nocturno (Bares/Discotecas)</option><option value="salud">8. Salud y Belleza (Ópticas/Clínicas)</option><option value="hoteleria">9. Hotelería y Hostales</option><option value="turismo">10. Agencias de Viajes</option><option value="panaderia">11. Panaderías y Comidas Rápidas</option><option value="mascotas">12. Mascotas (Veterinarias)</option><option value="agropecuario">13. Sector Agropecuario</option><option value="farmacia">14. Farmacias y Droguerías</option><option value="servicios">15. Servicios Profesionales</option><option value="educacion_tecnica">16. Educación Técnica</option><option value="estetica">17. Estética (Spa/Peluquerías)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="subtitle-label flex justify-between">RAZÓN SOCIAL <span class="text-blue-500 font-normal normal-case text-[8px]">(Autocompleta historial)</span></label>
+                    <input type="text" id="client-name" list="saved-companies" oninput="updateHeaders()" onchange="loadCompanyData(this.value); updateHeaders();" class="input-light w-full font-bold text-slate-800" placeholder="">
+                </div>
+                <div>
+                    <label class="subtitle-label truncate">RIVAL PRINCIPAL (M2/M3)</label>
+                    <div class="flex gap-1.5">
+                        <input type="text" id="c1_name" class="input-light w-full sync-c1" oninput="syncRivals('c1', this.value)" placeholder="Competidor 1">
+                        <button onclick="toggleRivalLock('c1')" class="btn-lock-c1 bg-white border border-slate-300 w-9 rounded flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors shadow-sm" title="Bloquear">🔓</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="subtitle-label truncate">RIVAL SECUNDARIO (M2/M3)</label>
+                    <div class="flex gap-1.5">
+                        <input type="text" id="c2_name" class="input-light w-full sync-c2" oninput="syncRivals('c2', this.value)" placeholder="Competidor 2">
+                        <button onclick="toggleRivalLock('c2')" class="btn-lock-c2 bg-white border border-slate-300 w-9 rounded flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors shadow-sm" title="Bloquear">🔓</button>
+                    </div>
+                </div>
+                <div><label class="subtitle-label">NIT / DOCUMENTO</label><input type="text" id="client-nit" class="input-light w-full" placeholder=""></div>
+                <div><label class="subtitle-label">FECHA AUDITORÍA</label><input type="date" id="doc-date" class="input-light w-full"></div>
+                <div><label class="subtitle-label">MUNICIPIO / SEDE</label><input type="text" id="client-city" class="input-light w-full" placeholder=""></div>
+                <div><label class="subtitle-label">TELÉFONO</label><input type="text" id="client-phone" class="input-light w-full" placeholder=""></div>
+            </div>
+        </section>
+    </header>
+
+    <main id="main-content" class="w-full flex-grow overflow-y-auto custom-scrollbar relative p-4 md:p-6 bg-slate-200/50 flex flex-col gap-5">
+        
+        <div id="wrapper-m1" class="block w-full">
+            <section class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="bg-blue-600 text-white w-8 h-8 rounded flex items-center justify-center font-bold text-lg shadow-sm">1</div>
+                    <h2 class="title-main">AUDITORÍA OPERACIONAL INTERNA</h2>
+                </div>
+                <div id="tiles-container-m1" class="grid grid-cols-2 md:grid-cols-5 gap-3 w-full pb-2"></div>
+                <div id="hidden-pool-m1" class="hidden"></div> 
+                <button id="btn-process-m1" onclick="processDiagnostico()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-lg font-black shadow-md uppercase tracking-widest mt-5 transition-colors">PROCESAR DIAGNÓSTICO OPERATIVO</button>
+            </section>
+            <section id="dashboard-m1" class="hidden mt-5 transition-all duration-300"><div id="view-resultados-diagnostico"></div></section>
+        </div>
+
+        <div id="wrapper-m2" class="hidden w-full">
+            <section class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="bg-indigo-600 text-white w-8 h-8 rounded flex items-center justify-center font-bold text-lg shadow-sm">2</div>
+                    <h2 class="title-main">MATRIZ DE PERFIL COMPETITIVO (MPC)</h2>
+                </div>
+                
+                <div class="flex justify-between items-center mb-4 mt-2">
+                    <span class="subtitle-label !text-[11px] !mb-0 text-slate-400">Enfrentamiento de Mercado</span>
+                    <div class="flex gap-2 items-center bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 shadow-inner">
+                        <span class="subtitle-label !mb-0 mr-2">Guía:</span>
+                        <span class="text-[9px] font-black text-white bg-red-500 px-2 py-0.5 rounded shadow-sm">1 = Deficiente</span>
+                        <span class="text-[9px] font-black text-white bg-yellow-500 px-2 py-0.5 rounded shadow-sm">2 = Aceptable</span>
+                        <span class="text-[9px] font-black text-white bg-emerald-500 px-2 py-0.5 rounded shadow-sm">3 = Óptimo</span>
+                    </div>
+                </div>
+
+                <div id="tiles-container-m2" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 w-full mb-5"></div>
+                <div id="hidden-pool-m2" class="hidden"></div>
+                <button id="btn-process-m2" onclick="processCompetencia()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-lg font-black shadow-md uppercase tracking-widest transition-colors">GENERAR GRÁFICO COMPARATIVO</button>
+            </section>
+            <section id="dashboard-m2" class="hidden mt-5 transition-all duration-300"><div id="view-resultados-competencia"></div></section>
+        </div>
+
+        <div id="wrapper-m3" class="hidden w-full">
+            <section id="capture-section-m3" class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="bg-orange-500 text-white w-8 h-8 rounded flex items-center justify-center font-bold text-lg shadow-sm">3</div>
+                    <h2 class="title-main">ETNOGRAFÍA PREDICTIVA (CUALITATIVA)</h2>
+                </div>
+                
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 bg-slate-50 p-5 rounded-xl border border-slate-200 gap-6 shadow-sm">
+                    <div class="w-full lg:w-1/2 flex flex-col gap-2">
+                        <h2 class="subtitle-label mb-1 text-slate-800">1. ¿A quién observamos en este momento? <span class="text-red-500">*</span></h2>
+                        <div class="flex gap-2 w-full">
+                            <label class="flex-1 cursor-pointer"><input type="radio" name="target_m3" id="radio_me" value="me" class="sr-only radio-target-m3" onchange="checkAllTilesM3()"><div class="bg-white border border-slate-300 rounded py-2 text-center font-bold text-[10px] text-slate-600 uppercase transition-all lbl-me truncate shadow-sm">MI EMPRESA</div></label>
+                            <label class="flex-1 cursor-pointer"><input type="radio" name="target_m3" id="radio_c1" value="c1" class="sr-only radio-target-m3" onchange="checkAllTilesM3()"><div class="bg-white border border-slate-300 rounded py-2 text-center font-bold text-[10px] text-slate-600 uppercase transition-all lbl-c1 truncate shadow-sm">COMP 1</div></label>
+                            <label class="flex-1 cursor-pointer"><input type="radio" name="target_m3" id="radio_c2" value="c2" class="sr-only radio-target-m3" onchange="checkAllTilesM3()"><div class="bg-white border border-slate-300 rounded py-2 text-center font-bold text-[10px] text-slate-600 uppercase transition-all lbl-c2 truncate shadow-sm">COMP 2</div></label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col items-center justify-center w-full lg:w-auto bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                        <span class="subtitle-label block mb-1">Muestra Recolectada</span>
+                        <div class="flex gap-2 text-center">
+                            <div class="bg-blue-50 border border-blue-200 text-blue-800 px-3 py-1 rounded text-xs font-black shadow-inner"><span id="count-me">0</span>/3</div>
+                            <div class="bg-slate-50 border border-slate-200 text-slate-700 px-3 py-1 rounded text-xs font-black shadow-inner"><span id="count-c1">0</span>/3</div>
+                            <div class="bg-slate-50 border border-slate-200 text-slate-700 px-3 py-1 rounded text-xs font-black shadow-inner"><span id="count-c2">0</span>/3</div>
+                        </div>
+                        <button onclick="resetDataM3()" class="mt-2 text-[9px] text-red-500 font-bold hover:text-red-700 uppercase tracking-wider border border-red-200 bg-red-50 px-2 py-0.5 rounded">Resetear Muestra</button>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-xs font-black text-slate-800 tracking-tight uppercase">2. Llenar los 15 bloques de observación</h2>
+                    <span class="text-[9px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded border border-red-100">* Variables Vitales</span>
+                </div>
+
+                <div id="tiles-container-m3" class="grid grid-cols-2 md:grid-cols-5 gap-3 w-full mb-5"></div>
+                <div id="hidden-pool-m3" class="hidden"></div>
+
+                <div class="flex gap-4 mt-2">
+                    <button onclick="saveObservationM3()" id="btn-save-obs" disabled class="flex-1 bg-orange-500 disabled:bg-slate-200 disabled:text-slate-400 text-white py-3.5 rounded-lg font-black shadow-md uppercase tracking-widest transition-colors">📥 Guardar Observación</button>
+                    <button onclick="generateReportM3()" id="btn-report-m3" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3.5 rounded-lg font-black shadow-md uppercase tracking-widest transition-colors">📊 COMPARAR RESULTADOS</button>
+                </div>
+            </section>
+            
+            <section id="dashboard-section-m3" class="hidden bg-white border border-slate-200 rounded-xl p-6 shadow-sm mt-5">
+                <div class="flex justify-between items-center mb-5 border-b border-slate-100 pb-4">
+                    <div>
+                        <h2 class="title-main">Reporte y Análisis de Brechas</h2>
+                        <p class="text-xs text-slate-500 mt-1 font-medium" id="dashboard-subtitle-m3">Tabulación cruzada.</p>
+                    </div>
+                    <button onclick="document.getElementById('dashboard-section-m3').classList.add('hidden'); document.getElementById('capture-section-m3').classList.remove('hidden');" class="bg-slate-100 hover:bg-slate-200 border border-slate-300 px-4 py-2 rounded-lg text-xs font-bold transition-colors">← Volver a Captura</button>
+                </div>
+                
+                <div class="flex justify-center gap-6 mb-6 bg-slate-50 py-3 rounded-lg border border-slate-200">
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 bg-blue-500 rounded-sm"></span><span class="text-xs font-bold text-slate-600 uppercase lbl-me">Mi Empresa</span></div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 bg-slate-400 rounded-sm"></span><span class="text-xs font-bold text-slate-600 uppercase lbl-c1">Comp 1</span></div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 bg-slate-800 rounded-sm"></span><span class="text-xs font-bold text-slate-600 uppercase lbl-c2">Comp 2</span></div>
+                </div>
+
+                <div id="dashboard-content-m3" class="flex flex-col gap-6"></div>
+            </section>
+        </div>
+
+        <div id="wrapper-m4" class="hidden flex-col h-full gap-4 relative pb-2 overflow-hidden w-full min-h-[600px]">
+            
+            <div class="w-full flex flex-col md:flex-row justify-between items-center bg-white p-3 rounded-lg shadow-sm border border-slate-200 gap-3 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="bg-slate-900 text-white w-8 h-8 rounded flex items-center justify-center font-black text-lg shadow-sm">4</div>
+                    <div>
+                        <h1 class="text-base font-black tracking-tight uppercase text-slate-900 leading-none">Plan de Acción Estratégico</h1>
+                        <p class="text-[10px] font-bold text-slate-500 italic mt-0.5">Gestión inteligente, resultados medibles.</p>
+                    </div>
+                </div>
+
+                <div class="flex-grow max-w-md mx-2 w-full">
+                    <input type="text" id="m4-business-name" readonly class="w-full bg-white border border-slate-200 rounded px-4 py-2 text-xs font-bold text-slate-800 shadow-inner focus:outline-none transition-colors uppercase tracking-wider" placeholder="EMPRESA / CLIENTE">
+                </div>
+
+                <div class="flex flex-wrap gap-2 w-full md:w-auto justify-end">
+                    <button onclick="window.simularExtraccionM4()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3 py-1.5 rounded text-[10px] font-bold transition-colors flex items-center gap-1 shadow-sm uppercase">
+                        ⚡ Auto-Generar
+                    </button>
+                    <button onclick="window.toggleDashboardM4()" id="btn-toggle-dash" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded text-[10px] font-bold transition-colors flex items-center gap-1.5 shadow-sm uppercase tracking-wide border border-slate-900">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                        <span id="text-toggle-dash">Colapsar Panel de Salud</span>
+                    </button>
+                    <button onclick="window.toggleViewM4()" id="btn-toggle-view" class="bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 px-3 py-1.5 rounded text-[10px] font-bold transition-colors flex items-center gap-1.5 shadow-sm uppercase">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path></svg>
+                        <span id="text-toggle-view">Vista Kanban</span>
+                    </button>
+                    <button onclick="window.openTaskModalM4()" class="bg-slate-900 hover:bg-black text-white px-4 py-1.5 rounded text-[10px] font-black transition-colors shadow-sm flex items-center gap-1 uppercase tracking-wide">
+                        + Nueva Tarea
+                    </button>
+                </div>
+            </div>
+
+            <div id="dashboard-container" class="w-full shrink-0 grid grid-cols-1 md:grid-cols-3 gap-3 transition-all duration-300 transform origin-top">
+                <div class="flex flex-col gap-3">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 flex flex-col justify-between">
+                        <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-wider mb-2 flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Estado General del Plan</h3>
+                        <div class="flex justify-between items-end mb-1">
+                            <div><p class="text-2xl font-black text-slate-900 leading-none" id="kpi-success-rate">0%</p><p class="text-[9px] font-bold text-slate-500 uppercase mt-0.5">Tasa de Éxito</p></div>
+                            <div class="text-right"><p class="text-lg font-black text-red-600 leading-none" id="kpi-risk-qty">0</p><p class="text-[9px] font-bold text-slate-500 uppercase mt-0.5">Riesgos / Fallos</p></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[9px] font-black text-slate-600 uppercase"><span>Salud Global</span><span id="kpi-health-text" class="text-slate-400">Sin Datos</span></div>
+                            <div class="gauge-container"><div id="kpi-health-bar" class="gauge-fill" style="width: 0%; background-color: #cbd5e1;"></div></div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 flex flex-col flex-grow">
+                        <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-wider mb-2 flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path></svg> Eficiencia por Área</h3>
+                        <div id="cat-list" class="space-y-2 flex-grow"></div>
+                        <div class="mt-2 pt-2 border-t border-slate-100 flex justify-between items-center text-[9px] font-black text-slate-500 uppercase">
+                            <span>Promedio General</span><span id="kpi-avg-efficiency" class="text-slate-800 text-xs">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 flex flex-col justify-between">
+                        <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-wider mb-2 flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z"></path></svg> Distribución de Tareas</h3>
+                        <div class="workload-bar" id="dist-bar"><div class="segment bg-slate-300 w-full text-slate-500">Sin Tareas</div></div>
+                        <div class="grid grid-cols-2 gap-y-1 gap-x-3 text-[9px] font-bold text-slate-600">
+                            <div class="flex items-center gap-1.5 justify-between"><div class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm color-cumplida"></span>Cumplidas</div> <span id="leg-cump">0</span></div>
+                            <div class="flex items-center gap-1.5 justify-between"><div class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm color-proceso"></span>En Proceso</div> <span id="leg-proc">0</span></div>
+                            <div class="flex items-center gap-1.5 justify-between"><div class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm color-vencida"></span>Vencidas</div> <span id="leg-venc">0</span></div>
+                            <div class="flex items-center gap-1.5 justify-between"><div class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm color-fail"></span>No Cumplidas</div> <span id="leg-fail">0</span></div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 flex flex-col flex-grow">
+                        <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-wider mb-2 flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Próximas a Vencer</h3>
+                        <ul id="expiring-list" class="flex flex-col gap-1.5 overflow-y-auto custom-scrollbar h-full"></ul>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-red-100 flex flex-col bg-gradient-to-b from-white to-red-50/20 flex-grow">
+                        <h3 class="text-[10px] font-black text-red-600 uppercase tracking-wider mb-2 flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Focos Críticos (Top 5)</h3>
+                        <div id="critical-list" class="flex flex-col gap-1.5 h-full justify-center"></div>
+                    </div>
+                    <div class="bg-slate-900 p-3 rounded-lg shadow-sm border border-slate-800 flex flex-col text-white shrink-0">
+                        <h3 class="text-[10px] font-black text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> Métricas Directivas</h3>
+                        <div class="flex flex-col gap-2">
+                            <div class="flex justify-between items-center border-b border-slate-700 pb-1"><span class="text-[9px] font-bold text-slate-400 uppercase">Cumplimiento Global</span><span class="text-sm font-black text-emerald-400" id="kpi-dir-comp">0%</span></div>
+                            <div class="flex justify-between items-center border-b border-slate-700 pb-1"><span class="text-[9px] font-bold text-slate-400 uppercase">Riesgo Operativo</span><span class="text-sm font-black text-red-400" id="kpi-dir-risk">0%</span></div>
+                            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-400 uppercase">Tendencia Semanal</span><div class="flex items-center gap-1 text-indigo-300 font-bold text-[10px]" id="kpi-dir-trend">N/A</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full flex-grow flex flex-col relative pb-1 mt-1 min-h-[500px]">
+                
+                <div id="view-table" class="bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col h-full transition-opacity duration-300">
+                    
+                    <div class="p-3 border-b border-slate-200 flex flex-col md:flex-row justify-between items-center bg-slate-50 shrink-0 gap-2">
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-[12px] font-black text-slate-800 uppercase tracking-tight ml-2">EJECUCIÓN TÁCTICA</h2>
+                            <span class="bg-indigo-100 text-indigo-800 text-[10px] font-black px-2 py-0.5 rounded shadow-sm" id="table-task-count">0 TAREAS</span>
+                        </div>
+                        <div class="flex items-center gap-2 w-full md:w-auto">
+                            <div class="relative flex-grow md:flex-grow-0">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-2 text-slate-400"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></span>
+                                <input type="text" id="search-input" onkeyup="window.searchTasksM4(this.value)" placeholder="Buscar código, tarea..." class="w-full md:w-56 pl-7 pr-2 py-1.5 bg-white border border-slate-300 rounded text-[11px] focus:outline-none focus:border-indigo-500 transition-colors shadow-sm">
+                            </div>
+                            <button onclick="window.exportExcelM4()" class="bg-[#107c41] hover:bg-green-800 text-white px-3 py-1.5 rounded border border-green-700 text-[10px] font-black tracking-widest uppercase transition-colors flex items-center gap-1.5 shadow-sm">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> EXCEL
+                            </button>
+                            <button onclick="window.exportWordM4()" class="bg-[#2b579a] hover:bg-blue-800 text-white px-3 py-1.5 rounded border border-blue-700 text-[10px] font-black tracking-widest uppercase transition-colors flex items-center gap-1.5 shadow-sm">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> WORD
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-y-auto custom-scrollbar flex-grow bg-slate-100">
+                        <table class="table-compact text-left border-collapse min-w-[1450px]">
+                            <thead class="sticky top-0 bg-slate-100 shadow-sm z-10 border-b-2 border-slate-200">
+                                <tr>
+                                    <th class="table-header w-[3%] text-center pl-2">#</th>
+                                    <th class="table-header w-[6%] text-center">CÓDIGO</th>
+                                    <th class="table-header w-[14%]">TAREA</th>
+                                    <th class="table-header w-[15%]">DESCRIPCIÓN</th>
+                                    <th class="table-header w-[8%]">RESP.</th>
+                                    <th class="table-header w-[8%]">FASE</th>
+                                    <th class="table-header w-[7%]">INICIO</th>
+                                    <th class="table-header w-[7%]">LÍMITE</th>
+                                    <th class="table-header w-[6%]">PPTO.</th>
+                                    <th class="table-header w-[4%] text-center">CT.</th>
+                                    <th class="table-header w-[7%]">KPI</th>
+                                    <th class="table-header w-[7%]">META</th>
+                                    <th class="table-header w-[8%] text-center pr-2">ESTADO</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body" class="text-xs text-slate-700 bg-white"></tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="p-2 border-t border-slate-200 flex justify-between items-center bg-slate-50 shrink-0">
+                        <span class="text-[10px] font-bold text-slate-500 ml-2" id="pagination-info">Mostrando 0 - 0 de 0</span>
+                        <div class="flex gap-1.5 mr-2">
+                            <button onclick="window.changePageM4(-1)" id="btn-prev" class="px-3 py-1 bg-white border border-slate-300 text-slate-600 rounded text-[10px] font-bold hover:bg-slate-100 disabled:opacity-50 transition-colors shadow-sm">&larr; Ant</button>
+                            <button onclick="window.changePageM4(1)" id="btn-next" class="px-3 py-1 bg-white border border-slate-300 text-slate-600 rounded text-[10px] font-bold hover:bg-slate-100 disabled:opacity-50 transition-colors shadow-sm">Sig &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-kanban" class="hidden flex-row flex-nowrap gap-3 overflow-x-auto overflow-y-hidden h-full bg-transparent absolute inset-0">
+                    <div class="bg-slate-50 flex flex-col rounded-lg flex-1 min-w-[220px] border border-slate-200 shadow-sm h-full overflow-hidden shrink-0">
+                        <div class="p-2.5 border-b border-slate-200 flex justify-between items-center bg-slate-100 shrink-0">
+                            <h2 class="font-black text-slate-600 text-[10px] uppercase tracking-wide flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full color-pendiente"></span> Pendiente</h2>
+                            <span class="bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded shadow-inner" id="count-kanban-pendiente">0</span>
+                        </div>
+                        <div class="p-2 flex-grow overflow-y-auto custom-scrollbar kanban-column flex flex-col gap-2.5" id="col-Pendiente" ondrop="window.dropM4(event)" ondragover="window.allowDropM4(event)"></div>
+                    </div>
+                    <div class="bg-[#fefce8] flex flex-col rounded-lg flex-1 min-w-[220px] border border-amber-200 shadow-sm h-full overflow-hidden shrink-0">
+                        <div class="p-2.5 border-b border-amber-200 flex justify-between items-center bg-[#fef9c3] shrink-0">
+                            <h2 class="font-black text-amber-800 text-[10px] uppercase tracking-wide flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full color-proceso"></span> En Proceso</h2>
+                            <span class="bg-amber-200 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded shadow-inner" id="count-kanban-proceso">0</span>
+                        </div>
+                        <div class="p-2 flex-grow overflow-y-auto custom-scrollbar kanban-column flex flex-col gap-2.5" id="col-Proceso" ondrop="window.dropM4(event)" ondragover="window.allowDropM4(event)"></div>
+                    </div>
+                    <div class="bg-[#fef2f2] flex flex-col rounded-lg flex-1 min-w-[220px] border border-red-200 shadow-sm h-full overflow-hidden shrink-0">
+                        <div class="p-2.5 border-b border-red-200 flex justify-between items-center bg-[#fee2e2] shrink-0">
+                            <h2 class="font-black text-red-800 text-[10px] uppercase tracking-wide flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full color-vencida"></span> Vencidas</h2>
+                            <span class="bg-red-200 text-red-800 text-[10px] font-bold px-2 py-0.5 rounded shadow-inner" id="count-kanban-vencida">0</span>
+                        </div>
+                        <div class="p-2 flex-grow overflow-y-auto custom-scrollbar kanban-column flex flex-col gap-2.5" id="col-Vencida" ondrop="window.dropM4(event)" ondragover="window.allowDropM4(event)"></div>
+                    </div>
+                    <div class="bg-[#f0fdf4] flex flex-col rounded-lg flex-1 min-w-[220px] border border-emerald-200 shadow-sm h-full overflow-hidden shrink-0">
+                        <div class="p-2.5 border-b border-emerald-200 flex justify-between items-center bg-[#d1fae5] shrink-0">
+                            <h2 class="font-black text-emerald-800 text-[10px] uppercase tracking-wide flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full color-cumplida"></span> Cumplido</h2>
+                            <span class="bg-emerald-200 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded shadow-inner" id="count-kanban-cumplido">0</span>
+                        </div>
+                        <div class="p-2 flex-grow overflow-y-auto custom-scrollbar kanban-column flex flex-col gap-2.5" id="col-Cumplido" ondrop="window.dropM4(event)" ondragover="window.allowDropM4(event)"></div>
+                    </div>
+                    <div class="bg-slate-100 flex flex-col rounded-lg flex-1 min-w-[220px] border border-slate-300 shadow-sm h-full overflow-hidden shrink-0">
+                        <div class="p-2.5 border-b border-slate-300 flex justify-between items-center bg-slate-200 shrink-0">
+                            <h2 class="font-black text-slate-800 text-[10px] uppercase tracking-wide flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full color-fail"></span> No Cumplido</h2>
+                            <span class="bg-slate-800 text-slate-100 text-[10px] font-bold px-2 py-0.5 rounded shadow-inner" id="count-kanban-nocumplido">0</span>
+                        </div>
+                        <div class="p-2 flex-grow overflow-y-auto custom-scrollbar kanban-column flex flex-col gap-2.5" id="col-NoCumplido" ondrop="window.dropM4(event)" ondragover="window.allowDropM4(event)"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="section-modal" class="fixed inset-0 bg-slate-900/80 hidden justify-center items-center z-[100] p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-8 py-5 flex justify-between items-center transition-colors duration-300 bg-blue-600" id="section-modal-header">
+                <div class="flex items-center gap-3">
+                    <div id="modal-icon-container" class="text-white hidden"></div>
+                    <div>
+                        <h3 id="section-modal-title" class="text-white font-black text-xl uppercase tracking-widest"></h3>
+                        <p id="section-modal-subtitle" class="text-white/80 text-[10px] font-bold uppercase tracking-widest mt-0.5 hidden">Observación de Cliente</p>
+                    </div>
+                </div>
+                <button onclick="closeDynamicModal()" class="text-white opacity-70 hover:opacity-100 transition-opacity"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <div id="m2-legend" class="hidden bg-slate-50 border-b border-slate-200 text-center py-3 text-xs text-slate-600 font-bold justify-center items-center flex-wrap gap-3 shadow-sm">
+                <span class="uppercase tracking-widest mr-2 text-[10px]">Guía de Calificación:</span> 
+                <span class="bg-red-500 px-3 py-1 rounded border border-red-600 text-white font-black shadow-sm text-[11px]">1 = Deficiente</span> 
+                <span class="bg-yellow-500 px-3 py-1 rounded border border-yellow-600 text-white font-black shadow-sm text-[11px]">2 = Aceptable</span> 
+                <span class="bg-emerald-500 px-3 py-1 rounded border border-emerald-600 text-white font-black shadow-sm text-[11px]">3 = Óptimo</span>
+            </div>
+            <div id="section-modal-body" class="p-4 md:p-8 overflow-y-auto flex-grow bg-slate-50 custom-scrollbar flex flex-col gap-4"></div>
+            <div class="bg-white border-t border-slate-200 px-8 py-5 flex justify-between items-center shrink-0">
+                <button onclick="clearCurrentModal()" id="btn-clear-modal" class="px-5 py-2.5 bg-white text-red-600 border border-slate-300 hover:bg-slate-50 rounded-lg font-bold text-xs uppercase tracking-widest transition-colors shadow-sm">Limpiar Datos</button>
+                <button onclick="closeDynamicModal()" id="btn-save-modal" class="bg-slate-900 px-8 py-3 text-white rounded-lg font-black hover:bg-black text-sm uppercase tracking-widest ml-auto shadow-md transition-all">Validar y Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="gap-modal-m2" class="fixed inset-0 bg-slate-900/80 hidden justify-center items-center z-[110] p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="bg-indigo-600 px-6 py-4 flex justify-between items-center">
+                <h3 id="gap-modal-title" class="text-white font-black text-sm uppercase tracking-widest">Detalle de Brechas</h3>
+                <button onclick="closeGapModal()" class="text-white opacity-80 hover:opacity-100 transition-opacity text-xl leading-none">X</button>
+            </div>
+            <div class="bg-slate-50 border-b border-slate-200 px-6 py-2 flex justify-end gap-4 text-[10px] font-bold text-slate-500 uppercase" id="gap-modal-headers">
+                <div class="w-16 text-center text-blue-600 truncate" id="gap-lbl-me">Mi Emp.</div>
+                <div class="w-16 text-center truncate" id="gap-lbl-c1">Rival 1</div>
+                <div class="w-16 text-center truncate" id="gap-lbl-c2">Rival 2</div>
+            </div>
+            <div id="gap-modal-body" class="p-6 overflow-y-auto flex-grow bg-white custom-scrollbar"></div>
+            <div class="bg-slate-50 border-t border-slate-200 px-6 py-4 flex justify-end">
+                <button onclick="closeGapModal()" class="px-6 py-2.5 bg-indigo-100 text-indigo-700 hover:bg-indigo-200 rounded-lg font-black text-xs uppercase tracking-widest transition-colors">Cerrar Detalle</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="justification-modal" class="fixed inset-0 bg-slate-900/80 hidden justify-center items-center z-[110] backdrop-blur-sm p-4">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-sm overflow-hidden flex flex-col">
+            <div class="bg-slate-900 px-4 py-2.5 flex items-center gap-2">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <h3 class="text-white font-black text-xs uppercase tracking-wide">Registro de Fallo Operativo</h3>
+            </div>
+            <div class="p-4 flex flex-col gap-2">
+                <p class="text-[11px] text-slate-600 font-medium">Estás marcando una tarea como <strong>"No Cumplida"</strong>. Ingresa el motivo.</p>
+                <input type="hidden" id="just-task-id"><input type="hidden" id="just-old-status">
+                <textarea id="just-text" rows="3" placeholder="Escribe aquí la justificación..." class="input-modal resize-none border-slate-300 focus:border-slate-900"></textarea>
+            </div>
+            <div class="bg-slate-50 border-t border-slate-200 px-4 py-2.5 flex justify-end gap-2">
+                <button onclick="window.cancelJustificationM4()" class="px-3 py-1.5 text-slate-600 font-bold border border-slate-300 hover:bg-slate-100 rounded text-[10px] uppercase">Cancelar</button>
+                <button onclick="window.saveJustificationM4()" class="px-3 py-1.5 bg-slate-900 text-white rounded font-bold hover:bg-black shadow-sm text-[10px] uppercase">Guardar Registro</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="task-modal" class="fixed inset-0 bg-slate-900/60 hidden justify-center items-center z-[100] backdrop-blur-sm p-4">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-xl overflow-hidden flex flex-col font-sans">
+            <div class="bg-indigo-600 px-5 py-3 flex justify-between items-center">
+                <h3 class="text-white font-black text-xs uppercase tracking-wide">Nueva Acción Estratégica</h3>
+                <button onclick="window.closeTaskModalM4()" class="text-white opacity-80 hover:opacity-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <div class="p-5 flex flex-col gap-3 overflow-y-auto custom-scrollbar max-h-[70vh]">
+                <input type="hidden" id="task-id">
+                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Nombre Tarea *</label><input type="text" id="task-title" class="input-modal"></div>
+                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Descripción</label><textarea id="task-desc" rows="2" class="input-modal resize-none"></textarea></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Responsable</label><input type="text" id="task-owner" class="input-modal"></div>
+                    <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Fase/Categoría</label><select id="task-category" class="input-modal"><option value="Estrategia">Estrategia</option><option value="Operaciones">Operaciones</option><option value="Marketing">Marketing</option><option value="Finanzas">Finanzas</option><option value="Infraestructura">Infraestructura</option></select></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Inicio</label><input type="date" id="task-start" class="input-modal text-xs"></div>
+                    <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Fecha Límite</label><input type="date" id="task-end" class="input-modal text-xs"></div>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Ppto ($)</label><input type="text" id="task-budget" class="input-modal"></div>
+                    <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Cant.</label><input type="text" id="task-qty" class="input-modal"></div>
+                    <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Estado Manual</label><select id="task-status" class="input-modal"><option value="Pendiente">Pendiente</option><option value="Proceso">En Proceso</option><option value="Cumplido">Cumplido</option><option value="NoCumplido">No Cumplido</option></select></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">KPI</label><input type="text" id="task-kpi" class="input-modal"></div>
+                    <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Meta</label><input type="text" id="task-result" class="input-modal"></div>
+                </div>
+                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Prioridad</label><select id="task-priority" class="input-modal"><option value="Alta">Alta (Urgente / Crítica)</option><option value="Media" selected>Media (Normal)</option><option value="Baja">Baja</option></select></div>
+            </div>
+            <div class="bg-slate-50 border-t border-slate-200 px-5 py-3 flex justify-end gap-2">
+                <button onclick="window.closeTaskModalM4()" class="px-4 py-1.5 text-slate-600 font-bold border border-slate-300 hover:bg-slate-100 rounded text-[10px] uppercase">Cancelar</button>
+                <button onclick="window.saveTaskM4()" class="px-5 py-1.5 bg-indigo-600 text-white rounded font-bold hover:bg-indigo-700 shadow-sm text-[10px] uppercase">Guardar Acción</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="database.js"></script>
+
+    <script>
+        // =========================================================================================
+        // FIX 1 APLICADO: LIMPIAR SESIÓN GLOBAL (Memoria Completa)
+        // =========================================================================================
+        window.clearAllSystemData = function() {
+            if(confirm("⚠ ¿Estás seguro de LIMPIAR TODA LA SESIÓN? Esto borrará el diagnóstico, la competencia, la etnografía y todo el PLAN DE ACCIÓN. No se puede deshacer.")) {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.reload();
+            }
+        };
+
+        // =========================================================================================
+        // DATA ESTRUCTURAL M3 CUALITATIVA
+        // =========================================================================================
+        const m3QualitativeData = [
+            { id: "sm1", title: "1. Identidad Demográfica", color: "bg-blue-600", icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z", q: [{ id: "q1", vital: false, text: "1. Rango de edad", opts: ["Niños/Teens", "Jóvenes (18-30)", "Adultos (31-50)", "Mayores (+51)"] }, { id: "q2", vital: false, text: "2. Estrato socioeconómico", opts: ["1", "2", "3", "4", "5"] }, { id: "q3", vital: false, text: "3. ¿Llega solo o acompañado?", opts: ["Solo", "Pareja", "Grupo familiar", "Amigos"] }, { id: "q4", vital: false, text: "4. Estilo visual", opts: ["Formal", "Casual", "Deportivo", "Alternativo"] }] },
+            { id: "sm2", title: "2. Dinámica de Grupo", color: "bg-blue-500", icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z", q: [{ id: "q5", vital: false, text: "5. Tamaño del grupo", opts: ["1", "2", "3-4", "5+"] }, { id: "q6", vital: false, text: "6. Rol del líder", opts: ["Decisor", "Influenciador", "Pasivo"] }, { id: "q7", vital: true, text: "7. Nivel de interacción", opts: ["Alta", "Media", "Baja"] }, { id: "q8", vital: false, text: "8. Actitud predominante", opts: ["Entusiasta", "Indiferente", "Crítica", "Curiosa"] }] },
+            { id: "sm3", title: "3. Hábitos Operativos", color: "bg-indigo-600", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", q: [{ id: "q9", vital: false, text: "9. Rango horario de visita", opts: ["7-10", "11-14", "15-18", "19-22"] }, { id: "q10", vital: false, text: "10. Frecuencia de visita", opts: ["Primera vez", "Ocasional", "Frecuente", "Recurrente"] }, { id: "q11", vital: true, text: "11. Tiempo de permanencia", opts: ["<15 min", "15-30 min", "30-60 min", "+1 hora"] }, { id: "q12", vital: false, text: "12. Nivel de planificación", opts: ["Espontánea", "Planificada", "Comparativa"] }] },
+            { id: "sm4", title: "4. Patrones Interacción", color: "bg-indigo-500", icon: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z", q: [{ id: "q13", vital: true, text: "13. Contacto visual con personal", opts: ["Alto", "Medio", "Bajo"] }, { id: "q14", vital: false, text: "14. Actitud frente a promociones", opts: ["Interesado", "Indiferente", "Crítico", "Curioso"] }, { id: "q15", vital: false, text: "15. Interacción verbal", opts: ["Fluida", "Puntual", "Escasa", "Nula"] }, { id: "q16", vital: false, text: "16. Reacción ante la espera", opts: ["Paciencia", "Ansiedad", "Irritación", "Distracción"] }] },
+            { id: "sm5", title: "5. Neuromarketing", color: "bg-violet-600", icon: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z", q: [{ id: "q17", vital: false, text: "17. Estímulo sensorial dominante", opts: ["Visual", "Auditivo", "Olfativo", "Táctil"] }, { id: "q18", vital: false, text: "18. Reacción emocional a colores", opts: ["Positiva", "Neutra", "Negativa"] }, { id: "q19", vital: false, text: "19. Engagement con displays", opts: ["Alto", "Medio", "Bajo"] }, { id: "q20", vital: false, text: "20. Respuesta a música/sonidos", opts: ["Agradable", "Indiferente", "Molesto"] }] },
+            { id: "sm6", title: "6. Branding", color: "bg-violet-500", icon: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01", q: [{ id: "q21", vital: true, text: "21. Reconocimiento de marca", opts: ["Sí", "No", "Parcial"] }, { id: "q22", vital: false, text: "22. Nivel de fidelidad", opts: ["Nuevo", "Ocasional", "Recurrente", "Leal"] }, { id: "q23", vital: false, text: "23. Reacción a promociones", opts: ["Interesado", "Indiferente", "Crítico"] }, { id: "q24", vital: false, text: "24. Identificación con la marca", opts: ["Alta", "Media", "Baja"] }] },
+            { id: "sm7", title: "7. Pricing Psicológico", color: "bg-purple-600", icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", q: [{ id: "q25", vital: true, text: "25. Reacción a precios visibles", opts: ["Aceptación", "Duda", "Rechazo"] }, { id: "q26", vital: false, text: "26. Sensibilidad a descuentos", opts: ["Alta", "Media", "Baja"] }, { id: "q27", vital: false, text: "27. Actitud frente a combos/2x1", opts: ["Interesado", "Indiferente", "Crítico"] }, { id: "q28", vital: true, text: "28. Percepción valor vs. precio", opts: ["Adecuado", "Alto", "Bajo"] }] },
+            { id: "sm8", title: "8. Experiencia (CX)", color: "bg-purple-500", icon: "M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z", q: [{ id: "q29", vital: false, text: "29. Reacción al tiempo de espera", opts: ["Paciencia", "Ansiedad", "Irritación"] }, { id: "q30", vital: true, text: "30. Nivel de satisfacción al salir", opts: ["Alta", "Media", "Baja"] }, { id: "q31", vital: true, text: "31. Percepción del trato recibido", opts: ["Cordial", "Neutro", "Frío", "Negativo"] }, { id: "q32", vital: true, text: "32. Intención de volver", opts: ["Alta", "Media", "Baja"] }] },
+            { id: "sm9", title: "9. Análisis Digital", color: "bg-orange-500", icon: "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9", q: [{ id: "q33", vital: false, text: "33. Plataforma digital más usada", opts: ["Facebook", "Instagram", "TikTok", "Google"] }, { id: "q34", vital: false, text: "34. Nivel de interacción en redes", opts: ["Alta", "Media", "Baja"] }, { id: "q35", vital: false, text: "35. Percepción emocional en comentarios", opts: ["Positiva", "Neutra", "Negativa"] }, { id: "q36", vital: false, text: "36. Tipo de contenido que más atrae", opts: ["Promociones", "Testimonios", "Videos", "Memes"] }] },
+            { id: "sm10", title: "10. CX Journey", color: "bg-orange-400", icon: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7", q: [{ id: "q37", vital: true, text: "37. Punto de fricción más evidente", opts: ["Entrada", "Espera", "Interacción", "Salida"] }, { id: "q38", vital: true, text: "38. Momento de mayor satisfaction", opts: ["Recepción", "Servicio", "Pago", "Ambiente"] }, { id: "q39", vital: false, text: "39. Emoción predominante", opts: ["Confianza", "Ansiedad", "Alegría", "Indiferencia"] }, { id: "q40", vital: true, text: "40. Probabilidad de recomendar", opts: ["Alta", "Media", "Baja"] }] },
+            { id: "sm11", title: "11. Proxémica Espacial", color: "bg-pink-500", icon: "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4", q: [{ id: "q41", vital: false, text: "41. Reacción a la densidad espacial", opts: ["Abandona la zona", "Se aparta/encoge", "Navega fluido", "Evita el pasillo"] }, { id: "q42", vital: true, text: "42. Respuesta física ante obstáculos", opts: ["Desorientación", "Pausa para escanear", "Trayectoria ininterrumpida", "Irritación visible"] }, { id: "q43", vital: false, text: "43. Uso del mobiliario de descanso", opts: ["Ignora/Se queda de pie", "Usa brevemente", "Se relaja prolongadamente", "Incomodidad postural"] }, { id: "q44", vital: false, text: "44. Velocidad del paso (Pacing)", opts: ["Acelerado/Prisa", "Pausado/Exploratorio", "Errático", "Detenido completamente"] }] },
+            { id: "sm12", title: "12. Carga Cognitiva", color: "bg-rose-500", icon: "M13 10V3L4 14h7v7l9-11h-7z", q: [{ id: "q45", vital: false, text: "45. Comportamiento al evaluar el producto", opts: ["Mirada errática/Confusión", "Lectura concentrada", "Pide ayuda al personal", "Elección rápida y segura"] }, { id: "q46", vital: true, text: "46. Reacción instintiva ante Cross-selling", opts: ["Rechazo defensivo", "Duda breve y declina", "Curiosidad activa", "Aceptación impulsiva"] }, { id: "q47", vital: false, text: "47. Manejo de saturación visual", opts: ["Abrumado/Ignora avisos", "Lee selectivamente", "Presta atención a todo", "Se confunde"] }, { id: "q48", vital: true, text: "48. Reacción ante falta de información", opts: ["Busca a un asesor", "Busca en su celular", "Abandona el producto", "Supone e ignora"] }] },
+            { id: "sm13", title: "13. Neuro del Pago", color: "bg-fuchsia-600", icon: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z", q: [{ id: "q49", vital: true, text: "49. Expresión facial exacta al pagar", opts: ["Tensión/Preocupación", "Neutralidad transaccional", "Relajación/Sonrisa", "Impaciencia/Prisa"] }, { id: "q50", vital: false, text: "50. Interacción táctil tras pagar", opts: ["Guarda rápido y busca salida", "Ritmo normal y despedida", "Revisa la compra con calma", "Interacción prolongada en caja"] }, { id: "q51", vital: true, text: "51. Reacción ante método de pago", opts: ["Alivio/Comodidad", "Fricción menor", "Queja abierta", "Indiferencia"] }, { id: "q52", vital: false, text: "52. Comportamiento post-compra inmediato", opts: ["Revisa ticket ansioso", "Mira celular rápido", "Observa su compra feliz", "Caminata acelerada para huir"] }] },
+            { id: "sm14", title: "14. ZMOT Phygital", color: "bg-emerald-500", icon: "M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z", q: [{ id: "q53", vital: false, text: "53. Uso del smartphone en el recorrido", opts: ["Comparando precios online", "Tomando fotos al producto", "Distracción en redes", "Guardado en el bolsillo"] }, { id: "q54", vital: false, text: "54. Búsqueda de validación in situ", opts: ["Hace videollamada", "Envía audios/fotos", "Revisa reseñas online", "No busca validación"] }, { id: "q55", vital: false, text: "55. Interrupción del ciclo de compra", opts: ["Pausa la compra y se distrae", "Multitasking fluido", "Ignora notificaciones", "Abandona por el chat"] }, { id: "q56", vital: false, text: "56. Interacción con tecnología local", opts: ["Escanea QR/Usa pantallas", "Intenta usar pero falla", "Ignora por completo", "Desconfía de la tecnología"] }] },
+            { id: "sm15", title: "15. Disonancia Cognitiva", color: "bg-teal-600", icon: "M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z", q: [{ id: "q57", vital: true, text: "57. Revisión de la compra al pagar", opts: ["Mira la bolsa con orgullo", "Revisa el recibo con duda", "Guarda rápido sin mirar", "Muestra arrepentimiento sutil"] }, { id: "q58", vital: false, text: "58. Comportamiento en la salida", opts: ["Sale a paso acelerado", "Pausa para orientarse", "Se despide del staff", "Sale distraído con el celular"] }, { id: "q59", vital: false, text: "59. Manejo del empaque/bolsa", opts: ["Lo exhibe como trofeo", "Lo oculta/dobla", "Lo lleva con descuido", "Lo mete en otra bolsa"] }, { id: "q60", vital: false, text: "60. Expresión residual al salir", opts: ["Satisfacción/Alivio", "Preocupación por el gasto", "Indiferencia total", "Emoción por usar el producto"] }] }
+        ];
+
+        // Añadimos 'N/A' como opción a todo el M3 para proteger cálculos.
+        m3QualitativeData.forEach(mod => mod.q.forEach(q => { if(!q.opts.includes("N/A")) q.opts.push("N/A"); }));
+
+        // =========================================================================================
+        // UTILIDADES GLOBALES
+        // =========================================================================================
+        const WolfDataBus = {
+            getDB: () => JSON.parse(localStorage.getItem('wolf_db')) || {},
+            saveDB: function(db) { localStorage.setItem('wolf_db', JSON.stringify(db)); this.updateDatalist(); },
+            updateDatalist: function() {
+                let db = this.getDB(); let dl = document.getElementById('saved-companies'); dl.innerHTML = '';
+                Object.values(db).forEach(c => { if(c.name) dl.innerHTML += `<option value="${c.name}"></option>`; });
+            }
+        };
+
+        window.syncRivals = function(type, value) {
+            document.querySelectorAll(`.sync-${type}`).forEach(el => { if(el.value !== value) el.value = value; });
+            updateHeaders();
+        }
+
+        window.toggleRivalLock = function(target) {
+            let sampleInput = document.querySelector(`.sync-${target}`); if(!sampleInput) return;
+            let isLocked = sampleInput.readOnly;
+            document.querySelectorAll(`.sync-${target}`).forEach(inp => { inp.readOnly = !isLocked; });
+            document.querySelectorAll(`.btn-lock-${target}`).forEach(btn => {
+                if(!isLocked) { btn.innerHTML = '🔒'; btn.classList.add('bg-red-50', 'text-red-600', 'border-red-200'); btn.classList.remove('bg-white', 'text-slate-500', 'border-slate-300'); } 
+                else { btn.innerHTML = '🔓'; btn.classList.remove('bg-red-50', 'text-red-600', 'border-red-200'); btn.classList.add('bg-white', 'text-slate-500', 'border-slate-300'); }
+            });
+        }
+
+        window.switchRouting = (route) => {
+            ['m1', 'm2', 'm3', 'm4'].forEach(mod => {
+                document.getElementById(`wrapper-${mod}`).classList.add('hidden');
+                document.getElementById(`nav-${mod}`)?.classList.remove('active-module');
+                document.getElementById(`nav-${mod}`)?.classList.add('tab-inactive');
+            });
+            document.getElementById(`wrapper-${route}`).classList.remove('hidden');
+            document.getElementById(`nav-${route}`)?.classList.remove('tab-inactive');
+            document.getElementById(`nav-${route}`)?.classList.add('active-module');
+            
+            // LA MAGIA DE LA INTEGRACIÓN: Actualizar M4 al entrar
+            if(route === 'm4') {
+                window.m4PlanAccion = JSON.parse(localStorage.getItem('m4_plan_accion')) || [];
+                window.renderAllM4();
+            } 
+        };
+
+        let activeModalContext = null; let currentBenchMatrix = [];
+
+        window.updateHeaders = function() {
+            let elMe = document.getElementById('client-name');
+            let me = elMe ? elMe.value.trim() : '';
+            me = me === "" ? 'MI EMPRESA' : me; 
+            
+            let elC1 = document.getElementById('c1_name');
+            let c1 = elC1 ? elC1.value.trim() : '';
+            c1 = c1 === "" ? 'COMP 1' : c1;
+            
+            let elC2 = document.getElementById('c2_name');
+            let c2 = elC2 ? elC2.value.trim() : '';
+            c2 = c2 === "" ? 'COMP 2' : c2;
+
+            document.querySelectorAll('.lbl-me').forEach(el => el.innerText = me); 
+            document.querySelectorAll('.lbl-c1').forEach(el => el.innerText = c1); 
+            document.querySelectorAll('.lbl-c2').forEach(el => el.innerText = c2);
+            
+            const gapMe = document.getElementById('gap-lbl-me'); if(gapMe) gapMe.innerText = me;
+            const gapC1 = document.getElementById('gap-lbl-c1'); if(gapC1) gapC1.innerText = c1;
+            const gapC2 = document.getElementById('gap-lbl-c2'); if(gapC2) gapC2.innerText = c2;
+
+            // Sincronizar campo visual de M4 idéntico al pantallazo
+            const m4Name = document.getElementById('m4-business-name');
+            if (m4Name) m4Name.value = me;
+        }
+
+        window.checkIndustryType = function() {
+            const select = document.getElementById('industry-selector'); if(!select) return;
+            let val = select.value; let targetMatrix = val;
+            if(!benchDataMaster[targetMatrix]) targetMatrix = 'moda'; 
+            currentBenchMatrix = benchDataMaster[targetMatrix]; renderTilesM2(); 
+        }
+
+        window.loadCompanyData = function(key) {
+            if(!key) return; let db = WolfDataBus.getDB();
+            let company = Object.values(db).find(c => c.name === key || c.nit === key);
+            if(company) {
+                document.getElementById('client-name').value = company.name || ""; document.getElementById('client-nit').value = company.nit || "";
+                if(company.m1_state) { for (const [id, value] of Object.entries(company.m1_state)) { let el = document.getElementById(id); if (el) el.value = value; } }
+                checkIndustryType(); 
+                if(company.m2_state) { for (const [k, v] of Object.entries(company.m2_state)) { let el = document.getElementById(k); if (el) { el.value = v; } else { let radio = document.querySelector(`input[name="${k}"][value="${v}"]`); if(radio) radio.checked = true; } } }
+                updateHeaders(); diagnosticData.forEach(s => validateSectionM1(s.id)); currentBenchMatrix.forEach((_, idx) => validateSectionM2(idx));
+            }
+        }
+
+        // =========================================================================================
+        // FIX 2 APLICADO: GUARDAR DATOS (GLOBAL Y CON CONFIRMACIÓN)
+        // =========================================================================================
+        window.saveAllData = function() {
+            const industrySelect = document.getElementById('industry-selector');
+            let name = document.getElementById('client-name').value.trim();
+            if (!industrySelect.value || !name) { alert("⚠️ Completa al menos Razón Social y Tipo de Comercio en la Ficha Técnica para guardar la sesión."); return; }
+            let nit = document.getElementById('client-nit').value.trim();
+            let db = WolfDataBus.getDB();
+            if(!db[name]) db[name] = { name: name, nit: nit };
+            db[name].name = name; db[name].nit = nit;
+            WolfDataBus.saveDB(db);
+            saveM1Data(true); 
+            saveM2Data(true); 
+            if(typeof window.saveDataM4 === 'function') window.saveDataM4();
+            alert("✅ ¡Todos los datos han sido guardados exitosamente en la memoria del sistema!");
+        }
+
+        // =========================================================================================
+        // MOTOR M1: DIAGNÓSTICO
+        // =========================================================================================
+        function getPhaseColorData(phaseId) {
+            switch(phaseId) { case 1: return { bg: 'bg-blue-600' }; case 2: return { bg: 'bg-indigo-600' }; case 3: return { bg: 'bg-orange-500' }; case 4: return { bg: 'bg-cyan-600' }; case 5: return { bg: 'bg-pink-600' }; case 6: return { bg: 'bg-purple-600' }; default: return { bg: 'bg-slate-600' }; }
+        }
+
+        function renderTilesM1() {
+            const container = document.getElementById('tiles-container-m1'); const pool = document.getElementById('hidden-pool-m1'); container.innerHTML = ''; pool.innerHTML = '';
+            diagnosticData.forEach(section => {
+                const color = getPhaseColorData(section.phase);
+                const tile = document.createElement('div'); tile.id = `tile-m1-${section.id}`; tile.className = `tile-card cursor-pointer rounded-xl p-4 text-white flex flex-col justify-center items-center text-center shadow h-32 relative ${color.bg}`; 
+                tile.onclick = () => { window.openDynamicModal('m1', section.id, section.category, color.bg, section.icon); };
+                tile.innerHTML = `<div class="mb-2"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${section.icon}"></path></svg></div><h3 class="font-black text-[12px] uppercase tracking-wide leading-tight">${section.category}</h3><div id="badge-m1-${section.id}" class="absolute top-2 right-2 hidden bg-white rounded-full p-0.5 shadow"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg></div>`;
+                container.appendChild(tile);
+                const wrapper = document.createElement('div'); wrapper.id = `wrapper-m1-${section.id}`; wrapper.className = "flex flex-col gap-0";
+                section.questions.forEach((q, qIndex) => { 
+                    wrapper.innerHTML += `<div class="flex flex-col lg:flex-row justify-between lg:items-center gap-3 py-4 border-b border-slate-200"><div class="lg:w-1/2"><span class="block font-bold text-slate-800 text-[13px]">${q.text}</span></div><div class="flex gap-2 items-center lg:w-1/2 justify-end"><select id="${section.id}_bin_${qIndex}" class="input-light w-20 py-2 font-black text-center" onchange="handleBinChangeM1('${section.id}', ${qIndex})"><option value="si">SI</option><option value="no">NO</option><option value="na">N/A</option></select><input type="number" min="1" max="5" id="${section.id}_${qIndex}" placeholder="1-5" class="input-light w-16 text-center font-black py-2" oninput="validateSectionM1('${section.id}')"><input type="text" id="${section.id}_obs_${qIndex}" placeholder="Notas..." class="input-light flex-grow min-w-[120px] py-2 text-xs" oninput="validateSectionM1('${section.id}')"></div></div>`; 
+                });
+                pool.appendChild(wrapper);
+            });
+        }
+
+        window.handleBinChangeM1 = function(secId, idx) {
+            let bin = document.getElementById(`${secId}_bin_${idx}`).value; let num = document.getElementById(`${secId}_${idx}`); let obs = document.getElementById(`${secId}_obs_${idx}`);
+            if(bin === 'no') { num.value = "1"; num.disabled = true; obs.classList.remove('border-red-500'); } 
+            else if(bin === 'na') { num.value = ""; num.disabled = true; obs.placeholder = "⚠️ Obligatorio justificar..."; if(obs.value.trim() === "") obs.classList.add('border-red-500'); } 
+            else { num.disabled = false; if(num.value === "" || num.value === "1") num.value = "5"; obs.classList.remove('border-red-500'); }
+            validateSectionM1(secId);
+        }
+
+        window.validateSectionM1 = function(id) {
+            const section = diagnosticData.find(s => s.id === id); let isComplete = true;
+            section.questions.forEach((_, index) => { const bin = document.getElementById(`${section.id}_bin_${index}`)?.value; const numVal = document.getElementById(`${section.id}_${index}`)?.value; const obsVal = document.getElementById(`${section.id}_obs_${index}`)?.value?.trim(); if(bin === 'si' && !numVal) isComplete = false; if(bin === 'na' && !obsVal) isComplete = false; });
+            const tile = document.getElementById(`tile-m1-${id}`); const badge = document.getElementById(`badge-m1-${id}`);
+            if (isComplete) { tile.className = tile.className.replace(/bg-[a-z]+-\d+/g, ''); tile.classList.add('bg-emerald-500'); badge?.classList.remove('hidden'); } 
+            else { const color = getPhaseColorData(section.phase); tile.className = tile.className.replace('bg-emerald-500', ''); tile.classList.add(color.bg); badge?.classList.add('hidden'); }
+        }
+
+        window.saveM1Data = function(silent = false) {
+            let name = document.getElementById('client-name').value; if(!name) return;
+            let db = WolfDataBus.getDB(); if(!db[name]) db[name] = {}; if(!db[name].m1_state) db[name].m1_state = {}; 
+            document.querySelectorAll('#wrapper-m1 input, #wrapper-m1 select, #hidden-pool-m1 input, #hidden-pool-m1 select').forEach(el => { if(el.id) db[name].m1_state[el.id] = el.value; }); WolfDataBus.saveDB(db);
+        }
+
+        function getWeights(industry) {
+            let w = {}; const gModa = ['moda', 'tecnologia', 'vehiculos', 'ferreteria', 'minimercado'], gSalud = ['salud', 'estetica', 'farmacia'], gComunidad = ['gastronomia', 'nocturno', 'hoteleria', 'turismo', 'panaderia', 'mascotas', 'agropecuario', 'servicios', 'educacion_tecnica'];
+            if (gModa.includes(industry)) { w['pagos'] = 0.10; w['exhibicion'] = 0.09; w['precio'] = 0.09; w['finanzas'] = 0.08; w['plaza'] = 0.08; w['digital'] = 0.07; w['buyer'] = 0.07; w['promocion'] = 0.06; w['crm'] = 0.06; w['producto'] = 0.05; w['estrategico'] = 0.04; w['atencion'] = 0.04; w['branding'] = 0.04; w['reputacion'] = 0.03; w['automatizacion'] = 0.03; w['competitivo'] = 0.02; w['estructura'] = 0.02; w['legal'] = 0.02; w['talento'] = 0.01; w['instalaciones'] = 0.01; } 
+            else if (gSalud.includes(industry)) { w['crm'] = 0.15; w['atencion'] = 0.15; w['reputacion'] = 0.12; w['legal'] = 0.10; w['instalaciones'] = 0.08; let rem = (1 - 0.60) / 15; diagnosticData.forEach(d => { if (!['crm','atencion','reputacion','legal','instalaciones'].includes(d.id)) w[d.id] = rem; }); } 
+            else if (gComunidad.includes(industry)) { w['talento'] = 0.15; w['finanzas'] = 0.12; w['promocion'] = 0.12; w['estrategico'] = 0.11; w['automatizacion'] = 0.10; let rem = (1 - 0.60) / 15; diagnosticData.forEach(d => { if (!['talento','finanzas','promocion','estrategico','automatizacion'].includes(d.id)) w[d.id] = rem; }); } 
+            else { diagnosticData.forEach(d => w[d.id] = 0.05); } return w;
+        }
+
+        function getImportance(industry, moduleId) { const weights = getWeights(industry); const w = weights[moduleId]; if (w >= 0.08) return "ALTA"; return "MEDIA"; }
+
+        function injectM1TasksToM4() {
+            let planAccion = [];
+            try { planAccion = JSON.parse(localStorage.getItem('m4_plan_accion')) || []; if(!Array.isArray(planAccion)) planAccion = []; } catch(e) { planAccion = []; }
+            let nuevasTareas = 0;
+            diagnosticData.forEach(section => {
+                const catNum = section.category.split('.')[0]; 
+                section.questions.forEach((q, index) => {
+                    const binVal = document.getElementById(`${section.id}_bin_${index}`)?.value;
+                    const numVal = parseInt(document.getElementById(`${section.id}_${index}`)?.value);
+                    const obsVal = document.getElementById(`${section.id}_obs_${index}`)?.value || "";
+                    
+                    if (binVal !== 'na' && numVal <= 2) {
+                        let code = `M1-${catNum}-${index + 1}`;
+                        if (!planAccion.some(t => t.code === code)) {
+                            planAccion.unshift({
+                                id: Date.now() + Math.floor(Math.random()*1000) + index,
+                                code: code, title: `Mejorar: ${q.text.replace(/^\d+\.\s*/, '')}`, desc: `Hallazgo M1 (${section.category}). Observación: ${obsVal}`,
+                                owner: "Gerencia", category: "Operaciones", start: new Date().toISOString().split('T')[0], end: "", budget: "0", qty: "1", status: "Pendiente", kpi: "Corrección", result: "Completado", priority: numVal === 1 ? "Alta" : "Media", justification: ""
+                            }); nuevasTareas++;
+                        }
+                    }
+                });
+            });
+            if (nuevasTareas > 0) { localStorage.setItem('m4_plan_accion', JSON.stringify(planAccion)); }
+        }
+
+        let radarChartInstance = null;
+        window.processDiagnostico = function() {
+            const dash = document.getElementById('dashboard-m1'); const btn = document.getElementById('btn-process-m1');
+            if (!dash.classList.contains('hidden')) { dash.classList.add('hidden'); btn.innerText = "PROCESAR DIAGNÓSTICO OPERATIVO"; return; }
+
+            try { let isFichaValid = document.getElementById('industry-selector').value && document.getElementById('client-name').value.trim(); if(isFichaValid) saveM1Data(true); } catch(e){}
+            
+            dash.classList.remove('hidden'); btn.innerText = "REPLEGAR DIAGNÓSTICO OPERATIVO";
+            
+            try {
+                let elName = document.getElementById('client-name').value.trim();
+                const clientName = elName === "" ? "Empresa Sin Nombre" : elName;
+                 
+                let currentIndustry = document.getElementById('industry-selector').value || 'moda'; 
+                let indSelect = document.getElementById('industry-selector');
+                let indText = indSelect.value ? indSelect.options[indSelect.selectedIndex].text : "Rubro no seleccionado";
+                let fechaAuditoria = document.getElementById('doc-date').value || new Date().toLocaleDateString('es-ES');
+                const currentWeights = getWeights(currentIndustry);
+                
+                const scores = [], labels = []; let totalScore = 0, totalMax = 0; let sectionResults = [];
+
+                diagnosticData.forEach((section) => {
+                    labels.push(section.shortName); let sScore = 0, sMax = 0; const weight = currentWeights[section.id] || 0.05; let answeredQs = 0;
+                    section.questions.forEach((_, index) => { 
+                        const numVal = document.getElementById(`${section.id}_${index}`)?.value; 
+                        const binVal = document.getElementById(`${section.id}_bin_${index}`)?.value; 
+                        if(numVal && binVal !== 'na') { sScore += parseInt(numVal); sMax += 5; answeredQs++; } 
+                    });
+                    if (sMax > 0) { 
+                        const perc = (sScore / sMax) * 100; scores.push(perc); totalScore += sScore; totalMax += sMax; 
+                        let avgNota = (sScore / answeredQs).toFixed(1); let criticidad = (5 - parseFloat(avgNota)) * weight; let importancia = getImportance(currentIndustry, section.id);
+                        sectionResults.push({ name: section.category.replace(/^\d+\.\s*/, ''), nota: parseFloat(avgNota), criticidad: criticidad, importancia: importancia });
+                    } else { scores.push(0); }
+                });
+
+                const glob = totalMax > 0 ? Math.round((totalScore / totalMax) * 100) : 0;
+                let col = glob < 60 ? "#EF4444" : (glob < 85 ? "#F59E0B" : "#10B981");
+                let statusText = glob < 60 ? "CRÍTICO: INTERVENCIÓN URGENTE" : (glob < 85 ? "ALERTA: MEJORA REQUERIDA" : "ÓPTIMO: ESTADO SALUDABLE");
+                let statusBadgeStyle = glob < 60 ? "background-color:#FEF2F2; color:#DC2626; border-color:#FCA5A5;" : (glob < 85 ? "background-color:#FEF3C7; color:#D97706; border-color:#FDE68A;" : "background-color:#D1FAE5; color:#059669; border-color:#A7F3D0;");
+
+                let dashOffset = 125.6 - (125.6 * glob / 100);
+                let rankingCardsHTML = '';
+                sectionResults.sort((a,b) => b.criticidad - a.criticidad).forEach(sec => {
+                    let notaColor = sec.nota <= 2.9 ? 'text-red-600' : (sec.nota <= 3.9 ? 'text-amber-500' : 'text-emerald-600');
+                    let borderCard = sec.nota <= 2.9 ? 'border-l-red-500' : (sec.nota <= 3.9 ? 'border-l-amber-400' : 'border-l-emerald-500');
+                    let badgeHtml = sec.importancia === 'ALTA' ? `<span class="text-[9px] font-bold text-red-500 flex items-center gap-1 mt-0.5"><svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.5 12a5.5 5.5 0 11-11 0 5.5 5.5 0 0111 0z"/></svg> Vital para este Rubro</span>` : `<span class="text-[9px] font-bold text-amber-500 flex items-center gap-1 mt-0.5"><svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 3.83L19.17 19H4.83L12 5.83zM11 16h2v2h-2v-2zm0-7h2v5h-2V8z"/></svg> Impacto Moderado</span>`;
+                    rankingCardsHTML += `<div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex justify-between items-center h-16 border-l-4 ${borderCard}"><div class="flex flex-col justify-center"><h4 class="font-black text-slate-800 uppercase text-[11px] leading-none tracking-wide">${sec.name}</h4>${badgeHtml}</div><div class="font-black text-xl ${notaColor}">${sec.nota.toFixed(1)}</div></div>`;
+                });
+
+                document.getElementById('view-resultados-diagnostico').innerHTML = `
+                <div class="w-full mt-2 flex flex-col gap-5">
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row gap-8 items-center">
+                        <div class="md:w-1/3 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-200 pb-5 md:pb-0 md:pr-5">
+                            <div class="relative w-36 h-20 overflow-visible flex justify-center mb-3">
+                                <svg viewBox="0 0 100 50" class="w-full overflow-visible">
+                                    <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#e2e8f0" stroke-width="12" stroke-linecap="round"></path>
+                                    <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="${col}" stroke-width="12" stroke-linecap="round" stroke-dasharray="125.6" stroke-dashoffset="${dashOffset}" class="gauge-circle"></path>
+                                </svg>
+                                <div class="absolute bottom-0 w-full text-center"><span class="text-3xl font-black" style="color: ${col}">${glob}%</span></div>
+                            </div>
+                            <div class="px-4 py-1.5 rounded-lg border text-[10px] font-black uppercase tracking-wider text-center shadow-sm" style="${statusBadgeStyle}"><span class="inline-block w-2 h-2 rounded-full mr-1" style="background-color: currentColor;"></span>${statusText}</div>
+                        </div>
+                        <div class="md:w-2/3 flex flex-col justify-center w-full">
+                            <span class="subtitle-label !mb-1">Resultados del Diagnóstico Operativo</span>
+                            <h2 class="title-main mb-3">${clientName}</h2>
+                            <div class="flex flex-wrap gap-3">
+                                <div class="bg-slate-50 border border-slate-200 py-2 px-4 rounded-xl flex-grow flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                                    <div class="flex flex-col overflow-hidden"><span class="block text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">RUBRO DE ANÁLISIS</span><span class="text-xs font-bold text-slate-800 truncate">${indText}</span></div>
+                                </div>
+                                <div class="bg-slate-50 border border-slate-200 py-2 px-4 rounded-xl w-36 shrink-0 flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    <div class="flex flex-col"><span class="block text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">EVALUACIÓN</span><span class="text-xs font-bold text-slate-800">${fechaAuditoria}</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 flex flex-col shadow-sm h-full">
+                            <div class="flex justify-between items-end border-b border-slate-100 pb-3 mb-4"><h4 class="title-main !text-lg">Matriz de Prioridad</h4><span class="text-[9px] font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-md uppercase tracking-wider">Por Criticidad y Peso Sectorial</span></div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">${rankingCardsHTML || '<p class="text-xs text-slate-400 italic col-span-2 text-center py-4">No hay datos suficientes ingresados en la matriz.</p>'}</div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 flex flex-col shadow-sm h-full">
+                            <div class="flex justify-between items-end border-b border-slate-100 pb-3 mb-4"><h4 class="title-main !text-lg">Estructura de Rendimiento</h4></div>
+                            <div class="h-[350px] w-full relative"><canvas id="radarChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>`;
+                
+                if (window.radarChartInstance) { window.radarChartInstance.destroy(); window.radarChartInstance = null; }
+                setTimeout(() => {
+                    const canvas = document.getElementById('radarChart'); if(!canvas) return;
+                    const ctx = canvas.getContext('2d'); 
+                    window.radarChartInstance = new Chart(ctx, { type: 'radar', data: { labels: labels, datasets: [{ label: 'Rendimiento %', data: scores, backgroundColor: 'rgba(37, 99, 235, 0.1)', borderColor: '#2563eb', pointBackgroundColor: '#2563eb', pointBorderColor: '#fff', pointHoverBackgroundColor: '#fff', pointHoverBorderColor: '#2563eb', borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { r: { min: 0, max: 100, beginAtZero: true, ticks: { display: false, stepSize: 20 }, grid: { color: '#e2e8f0' }, angleLines: { color: '#e2e8f0', display: true }, pointLabels: { font: { size: 9, family: 'Inter', weight: '700' }, color: '#64748b' } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return context.raw.toFixed(1) + '%'; } } } } } });
+                    document.getElementById('dashboard-m1').scrollIntoView({ behavior: 'smooth' });
+                }, 250);
+                
+                injectM1TasksToM4();
+            } catch (err) { console.error("Error en renderizado M1:", err); }
+        }
+
+        // =========================================================================================
+        // MOTOR M2: PERFIL COMPETITIVO 
+        // =========================================================================================
+        function renderTilesM2() {
+            const container = document.getElementById('tiles-container-m2'); const pool = document.getElementById('hidden-pool-m2'); container.innerHTML = ''; pool.innerHTML = '';
+            currentBenchMatrix.forEach((cat, index) => {
+                const colorBg = typeof m2aColors !== 'undefined' ? m2aColors[index % m2aColors.length] : 'bg-slate-600'; 
+                const iconSvg = typeof m2aIcons !== 'undefined' ? m2aIcons[index % m2aIcons.length] : 'M4 6h16M4 12h16M4 18h16';
+                const tile = document.createElement('div'); tile.id = `tile-m2-${index}`; tile.className = `tile-card cursor-pointer rounded-xl p-4 text-white flex flex-col justify-center items-center text-center shadow h-32 relative ${colorBg}`; 
+                tile.onclick = () => { window.openDynamicModal('m2', index, cat.category, colorBg, iconSvg); };
+                tile.innerHTML = `<div class="mb-2"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${iconSvg}"></path></svg></div><h3 class="font-black text-[12px] uppercase tracking-wide leading-tight">${cat.category}</h3><div id="badge-m2-${index}" class="absolute top-2 right-2 hidden bg-white rounded-full p-1 shadow"><svg class="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg></div>`;
+                container.appendChild(tile);
+                const wrapper = document.createElement('div'); wrapper.id = `wrapper-m2-${index}`; wrapper.className = "flex flex-col gap-0";
+                cat.q.forEach((question, qIndex) => {
+                    const id = `b_${index}_${qIndex}`; const s1 = question.scales ? question.scales[1] : 'Deficiente'; const s2 = question.scales ? question.scales[2] : 'Aceptable'; const s3 = question.scales ? question.scales[3] : 'Óptimo';
+                    wrapper.innerHTML += `<div class="flex flex-col xl:flex-row justify-between items-center gap-8 py-5 border-b border-slate-200 last:border-0"><div class="xl:w-2/5"><h4 class="text-[14px] font-black text-slate-800 leading-snug mb-1.5">${question.title}</h4><p class="text-[12px] text-slate-500 leading-relaxed font-medium">${question.desc}</p></div><div class="xl:w-3/5 grid grid-cols-3 gap-5 w-full">${renderRadioGroupM2(id+'_me', 'lbl-me', 'text-blue-600', s1, s2, s3, index)}${renderRadioGroupM2(id+'_c1', 'lbl-c1', 'text-slate-500', s1, s2, s3, index)}${renderRadioGroupM2(id+'_c2', 'lbl-c2', 'text-slate-500', s1, s2, s3, index)}</div></div>`;
+                });
+                pool.appendChild(wrapper);
+            }); updateHeaders();
+        }
+
+        function renderRadioGroupM2(name, labelClass, textClass, s1, s2, s3, catIdx) {
+            return `<div class="flex flex-col gap-1.5"><span class="text-[10px] font-black ${textClass} uppercase text-center truncate tracking-widest ${labelClass}">RIVAL</span><div class="flex bg-slate-100 rounded-lg border border-slate-200 p-1.5 shadow-inner gap-1"><label class="flex-1 cursor-pointer relative" title="${s1}"><input type="radio" name="${name}" value="1" class="peer sr-only radio-val-1" onchange="validateSectionM2(${catIdx})"><div class="text-[13px] font-black text-center py-1.5 rounded border border-transparent text-slate-400 transition-all hover:bg-white bg-transparent">1</div></label><label class="flex-1 cursor-pointer relative" title="${s2}"><input type="radio" name="${name}" value="2" class="peer sr-only radio-val-2" onchange="validateSectionM2(${catIdx})"><div class="text-[13px] font-black text-center py-1.5 rounded border border-transparent text-slate-400 transition-all hover:bg-white bg-transparent">2</div></label><label class="flex-1 cursor-pointer relative" title="${s3}"><input type="radio" name="${name}" value="3" class="peer sr-only radio-val-3" onchange="validateSectionM2(${catIdx})"><div class="text-[13px] font-black text-center py-1.5 rounded border border-transparent text-slate-400 transition-all hover:bg-white bg-transparent">3</div></label></div></div>`;
+        }
+
+        window.validateSectionM2 = function(id) {
+            const cat = currentBenchMatrix[id]; let isComplete = true; cat.q.forEach((_, qIndex) => { let qId = `b_${id}_${qIndex}`; if(!document.querySelector(`input[name="${qId}_me"]:checked`) || !document.querySelector(`input[name="${qId}_c1"]:checked`) || !document.querySelector(`input[name="${qId}_c2"]:checked`)) isComplete = false; });
+            const badge = document.getElementById(`badge-m2-${id}`); if(isComplete) badge?.classList.remove('hidden'); else badge?.classList.add('hidden');
+        }
+
+        window.saveM2Data = function(silent = false) {
+            let name = document.getElementById('client-name').value; if(!name) return; let db = WolfDataBus.getDB(); if(!db[name]) db[name] = {}; if(!db[name].m2_state) db[name].m2_state = {}; document.querySelectorAll('#wrapper-m2 input, #hidden-pool-m2 input').forEach(el => { if(el.name && el.type === 'radio' && el.checked) db[name].m2_state[el.name] = el.value; if(el.id && el.type === 'text') db[name].m2_state[el.id] = el.value; }); WolfDataBus.saveDB(db);
+        }
+
+        function getM2CategoryWeights(industry, catLength) {
+            const weightProfiles = { 'moda': [25, 20, 15, 10, 20, 10], 'tecnologia': [20, 15, 15, 20, 15, 15], 'vehiculos': [25, 15, 20, 15, 15, 10], 'ferreteria': [25, 20, 15, 10, 20, 10], 'minimercado': [25, 20, 20, 10, 20, 5], 'gastronomia': [25, 20, 20, 15, 10, 10], 'nocturno': [30, 15, 20, 15, 10, 10], 'salud': [20, 25, 15, 15, 15, 10], 'hoteleria': [20, 20, 15, 15, 20, 10], 'turismo': [20, 20, 20, 20, 10, 10], 'panaderia': [25, 20, 15, 20, 10, 10], 'mascotas': [20, 25, 15, 15, 15, 10], 'agropecuario': [25, 20, 15, 15, 15, 10], 'farmacia': [20, 25, 20, 15, 10, 10], 'servicios': [30, 20, 15, 15, 10, 10], 'educacion_tecnica': [25, 20, 15, 15, 15, 10], 'estetica': [25, 20, 15, 15, 15, 10] };
+            return weightProfiles[industry] || [25, 20, 15, 15, 15, 10];
+        }
+
+        window.gapDetailsData = [];
+        window.openGapModal = function(idx, catName) {
+            document.getElementById('gap-modal-title').innerText = `Detalle de Brechas: ${catName}`;
+            document.getElementById('gap-modal-body').innerHTML = window.gapDetailsData[idx];
+            document.getElementById('gap-lbl-me').innerText = document.getElementById('client-name').value || "MI EMPRESA";
+            document.getElementById('gap-lbl-c1').innerText = document.getElementById('c1_name').value || "RIVAL 1";
+            document.getElementById('gap-lbl-c2').innerText = document.getElementById('c2_name').value || "RIVAL 2";
+            document.getElementById('gap-modal-m2').classList.remove('hidden'); document.getElementById('gap-modal-m2').classList.add('flex');
+        }
+        window.closeGapModal = function() { document.getElementById('gap-modal-m2').classList.add('hidden'); document.getElementById('gap-modal-m2').classList.remove('flex'); }
+
+        let barChartInstanceM2 = null;
+        window.processCompetencia = function() {
+            const dash = document.getElementById('dashboard-m2'); const btn = document.getElementById('btn-process-m2');
+            if (!dash.classList.contains('hidden')) { dash.classList.add('hidden'); btn.innerText = "GENERAR GRÁFICO COMPARATIVO"; return; }
+
+            try { let isFichaValid = document.getElementById('industry-selector').value && document.getElementById('client-name').value.trim(); if(isFichaValid) saveM2Data(true); } catch(e){}
+            
+            dash.classList.remove('hidden'); btn.innerText = "OCULTAR GRÁFICO COMPARATIVO";
+
+            try {
+                let elName = document.getElementById('client-name').value.trim();
+                const meName = elName === "" ? "Mi Empresa" : elName;
+                let elC1 = document.getElementById('c1_name').value.trim();
+                const c1Name = elC1 === "" ? "Competidor 1" : elC1;
+                let elC2 = document.getElementById('c2_name').value.trim();
+                const c2Name = elC2 === "" ? "Competidor 2" : elC2; 
+                
+                let currentIndustry = document.getElementById('industry-selector').value || 'moda';
+                let indSelect = document.getElementById('industry-selector');
+                let indText = indSelect.value ? indSelect.options[indSelect.selectedIndex].text : "Rubro no seleccionado";
+                
+                if (currentBenchMatrix.length === 0 && typeof benchDataMaster !== 'undefined') currentBenchMatrix = benchDataMaster['moda'];
+
+                let labels = []; let dataMe = [], dataC1 = [], dataC2 = [];
+                let gapAnalysisHTML = ''; let planAccion = [];
+                try { planAccion = JSON.parse(localStorage.getItem('m4_plan_accion')) || []; if(!Array.isArray(planAccion)) planAccion = []; } catch(e){ planAccion = []; }
+                let nuevasTareas = 0; let m2Weights = getM2CategoryWeights(currentIndustry, currentBenchMatrix.length);
+                window.gapDetailsData = [];
+
+                currentBenchMatrix.forEach((cat, index) => {
+                    labels.push(cat.category); let sMe = 0, sC1 = 0, sC2 = 0; let qCount = cat.q.length;
+                    let pesoCat = m2Weights[index] || Math.round(100/currentBenchMatrix.length);
+                    
+                    let questionsHTML = '<div class="flex flex-col gap-3">';
+                    cat.q.forEach((q, qIndex) => { 
+                        const qId = `b_${index}_${qIndex}`; 
+                        
+                        let elMe = document.querySelector(`input[name="${qId}_me"]:checked`); let valMe = elMe ? parseInt(elMe.value) : 0; sMe += valMe; 
+                        let elC1 = document.querySelector(`input[name="${qId}_c1"]:checked`); let valC1 = elC1 ? parseInt(elC1.value) : 0; sC1 += valC1; 
+                        let elC2 = document.querySelector(`input[name="${qId}_c2"]:checked`); let valC2 = elC2 ? parseInt(elC2.value) : 0; sC2 += valC2; 
+                        
+                        let colorMe = valMe === 1 ? 'text-red-600' : (valMe === 2 ? 'text-yellow-600' : (valMe === 3 ? 'text-emerald-600' : 'text-slate-400'));
+
+                        questionsHTML += `
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                <div class="text-[12px] font-black text-slate-800 md:w-3/5 leading-tight">${q.title}</div>
+                                <div class="flex gap-4 md:w-2/5 md:justify-end">
+                                    <div class="text-center w-16"><span class="block text-[8px] text-slate-400 uppercase tracking-widest mb-1 truncate">Mi Empresa</span><span class="font-black text-lg ${colorMe}">${valMe}</span></div>
+                                    <div class="text-center w-16"><span class="block text-[8px] text-slate-400 uppercase tracking-widest mb-1 truncate">Rival 1</span><span class="font-black text-lg text-slate-600">${valC1}</span></div>
+                                    <div class="text-center w-16"><span class="block text-[8px] text-slate-400 uppercase tracking-widest mb-1 truncate">Rival 2</span><span class="font-black text-lg text-slate-600">${valC2}</span></div>
+                                </div>
+                            </div>`;
+                        
+                        if(valMe === 1 || valMe === 2) {
+                            let code = `M2-${index+1}-${qIndex+1}`;
+                            if (!planAccion.some(t => t.code === code)) {
+                                planAccion.unshift({
+                                    id: Date.now() + Math.floor(Math.random()*1000) + qIndex,
+                                    code: code, title: `Mejorar: ${q.title}`, desc: `Hallazgo MPC (${cat.category}). Mi calificación: ${valMe}/3.`, owner: "Gerencia", category: "Estrategia", start: new Date().toISOString().split('T')[0], end: "", budget: "0", qty: "1", status: "Pendiente", kpi: "Superar al rival", result: "Completado", priority: valMe === 1 ? "Alta" : "Media", justification: ""
+                                });
+                                nuevasTareas++;
+                            }
+                        }
+                    });
+                    questionsHTML += '</div>';
+                    window.gapDetailsData[index] = questionsHTML;
+                    
+                    let avgMe = (sMe / qCount).toFixed(1); let avgC1 = (sC1 / qCount).toFixed(1); let avgC2 = (sC2 / qCount).toFixed(1);
+                    let bestRival = Math.max(parseFloat(avgC1), parseFloat(avgC2)).toFixed(1);
+                    
+                    dataMe.push(parseFloat(avgMe) * 33.33); dataC1.push(parseFloat(avgC1) * 33.33); dataC2.push(parseFloat(avgC2) * 33.33);
+
+                    let badgeHtml = ''; let badgeStyle = '';
+                    if (parseFloat(avgMe) < parseFloat(bestRival)) { badgeHtml = 'DESVENTAJA'; badgeStyle = 'text-red-600 border-red-200 bg-red-50'; }
+                    else if (parseFloat(avgMe) === parseFloat(bestRival) && parseFloat(avgMe) > 0) { badgeHtml = 'PARIDAD (NEUTRO)'; badgeStyle = 'text-yellow-700 border-yellow-300 bg-yellow-50'; }
+                    else if (parseFloat(avgMe) > parseFloat(bestRival)) { badgeHtml = 'VENTAJA'; badgeStyle = 'text-emerald-700 border-emerald-200 bg-emerald-50'; }
+                    else { badgeHtml = 'SIN DATOS'; badgeStyle = 'text-slate-500 border-slate-300 bg-slate-50'; }
+
+                    gapAnalysisHTML += `
+                        <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 flex flex-col md:flex-row justify-between md:items-center shadow-sm gap-4 transition-all hover:shadow-md">
+                            <div><div class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">PESO: ${pesoCat}%</div><div class="text-base font-black text-slate-900 uppercase">${cat.category}</div></div>
+                            <div class="flex flex-wrap md:flex-nowrap items-center gap-4 sm:gap-8">
+                                <div class="text-center"><div class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">MI EMPRESA</div><div class="text-blue-600 font-black text-lg leading-none">${avgMe} <span class="text-xs text-slate-400">/ 3.0</span></div></div>
+                                <div class="text-center"><div class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">MEJOR RIVAL</div><div class="text-slate-700 font-black text-lg leading-none">${bestRival} <span class="text-xs text-slate-400">/ 3.0</span></div></div>
+                                <div class="w-[140px] text-center shrink-0"><span class="border px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest w-full block shadow-sm ${badgeStyle}">${badgeHtml}</span></div>
+                                <button onclick="window.openGapModal(${index}, '${cat.category}')" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-1.5 shrink-0 border border-slate-300">
+                                    🔍 Ver Detalle
+                                </button>
+                            </div>
+                        </div>`;
+                });
+
+                if (nuevasTareas > 0) { localStorage.setItem('m4_plan_accion', JSON.stringify(planAccion)); console.log(`Matriz MPC: ${nuevasTareas} brechas al M4.`); }
+
+                document.getElementById('view-resultados-competencia').innerHTML = `
+                <div class="w-full mt-2 flex flex-col gap-5">
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col gap-2">
+                        <span class="subtitle-label !mb-1">RESULTADOS DE INTELIGENCIA COMPETITIVA</span>
+                        <h2 class="title-main">${meName}</h2>
+                        <div class="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-lg inline-block text-xs font-bold self-start mt-2">Rubro de Análisis: ${indText}</div>
+                    </div>
+                    <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 flex flex-col shadow-sm">
+                        <h4 class="title-main !text-xl border-b border-slate-100 pb-3 mb-2">Matriz de Perfil Competitivo (MPC)</h4>
+                        <p class="text-xs text-slate-500 mb-8 font-medium">Algoritmo de Gap Analysis por Barras Agrupadas.</p>
+                        <div class="h-[400px] w-full relative mb-10"><canvas id="radarChartM2"></canvas></div>
+                        <h4 class="title-main !text-lg border-b border-slate-100 pb-3 mb-6">Análisis de Brechas (GAP Analysis)</h4>
+                        <div class="flex flex-col gap-4 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">${gapAnalysisHTML}</div>
+                    </div>
+                </div>`;
+                
+                if (window.radarChartInstanceM2) { window.radarChartInstanceM2.destroy(); window.radarChartInstanceM2 = null; }
+                setTimeout(() => {
+                    const canvas = document.getElementById('radarChartM2'); if(!canvas) return;
+                    const ctx = canvas.getContext('2d'); 
+                    window.radarChartInstanceM2 = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [ { label: meName, data: dataMe, backgroundColor: '#2563eb', borderRadius: 4 }, { label: c1Name, data: dataC1, backgroundColor: '#ef4444', borderRadius: 4 }, { label: c2Name, data: dataC2, backgroundColor: '#eab308', borderRadius: 4 } ] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100, ticks: { stepSize: 20 }, title: { display: true, text: 'Rendimiento (%)', font: {size: 10, weight: 'bold'} } }, x: { grid: { display: false }, ticks: { font: { size: 10, family: 'Inter', weight: '700' }, color: '#475569' } } }, plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: {family: 'Inter', weight: '600'} } }, tooltip: { callbacks: { label: function(context) { return context.dataset.label + ': ' + (context.raw / 33.33).toFixed(1) + ' / 3.0'; } } } } } }); 
+                    document.getElementById('dashboard-m2').scrollIntoView({ behavior: 'smooth' });
+                }, 250);
+            } catch (err) { console.error("Error renderizando M2:", err); }
+        };
+
+        // =========================================================================================
+        // MOTOR M3: ETNOGRAFÍA PREDICTIVA 
+        // =========================================================================================
+        let m3Counts = { me: 0, c1: 0, c2: 0 }; let m3Obs = [];
+        try { m3Counts = JSON.parse(localStorage.getItem('wolf_m3_counts_qual')) || { me: 0, c1: 0, c2: 0 }; } catch(e){}
+        try { m3Obs = JSON.parse(localStorage.getItem('wolf_m3_data_qual')) || []; } catch(e){}
+
+        window.resetDataM3 = function() { 
+            if(confirm("⚠ ¿Borrar observaciones etnológicas? Esta acción borrará todas las capturas del Módulo 3.")) { 
+                localStorage.removeItem('wolf_m3_data_qual'); localStorage.removeItem('wolf_m3_counts_qual'); 
+                m3Obs = []; m3Counts = { me: 0, c1: 0, c2: 0 }; updateUIM3(); alert("Muestra reseteada."); 
+            } 
+        }
+
+        function initM3() {
+            const container = document.getElementById('tiles-container-m3'); const pool = document.getElementById('hidden-pool-m3'); 
+            container.innerHTML = ''; pool.innerHTML = '';
+            m3QualitativeData.forEach((mod) => {
+                const colorBase = mod.color.split(' ')[0]; 
+                const tile = document.createElement('div'); tile.id = `tile-m3-${mod.id}`; 
+                tile.className = `tile-card cursor-pointer rounded-xl p-3 text-white flex flex-col justify-center items-center text-center shadow h-32 relative overflow-hidden ${colorBase} hover:brightness-110`; 
+                tile.onclick = () => { window.openDynamicModal('m3', mod.id, mod.title, colorBase, mod.icon); };
+                tile.innerHTML = `<div class="mb-2"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${mod.icon}"></path></svg></div><h3 class="font-black text-[11px] uppercase tracking-wide leading-tight px-1">${mod.title}</h3><div id="badge-m3-${mod.id}" class="absolute top-2 right-2 hidden bg-white rounded-full p-1 shadow-md"><svg class="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg></div>`;
+                container.appendChild(tile);
+                const wrapper = document.createElement('div'); wrapper.id = `wrapper-m3-${mod.id}`; wrapper.className = "flex flex-col gap-4";
+                mod.q.forEach((q) => {
+                    let optsHTML = `<option value="" disabled selected>Seleccione una opción...</option>`;
+                    q.opts.forEach(opt => optsHTML += `<option value="${opt}">${opt === 'N/A' ? 'N/A (No Aplica)' : opt}</option>`);
+                    let vitalBadge = q.vital ? `<span class="text-red-500 text-lg leading-none" title="Variable Vital">*</span>` : '';
+                    wrapper.innerHTML += `<div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm flex flex-col gap-2"><label class="text-[13px] font-bold text-slate-800 flex items-center gap-1">${q.text} ${vitalBadge}</label><select id="m3_sel_${q.id}" onchange="checkTileCompletionM3('${mod.id}')" class="input-light w-full py-2.5 px-3 font-medium text-slate-700">${optsHTML}</select></div>`;
+                });
+                pool.appendChild(wrapper);
+            }); 
+            updateUIM3();
+        }
+
+        window.checkTileCompletionM3 = function(modId) {
+            const modData = m3QualitativeData.find(m => m.id === modId); let isComplete = true; 
+            modData.q.forEach(q => { if(!document.getElementById(`m3_sel_${q.id}`).value) isComplete = false; });
+            const tile = document.getElementById(`tile-m3-${modId}`); const badge = document.getElementById(`badge-m3-${modId}`);
+            if (isComplete) { tile.className = tile.className.replace(/bg-[a-z]+-\d+/g, ''); tile.classList.add('bg-emerald-500'); badge?.classList.remove('hidden'); } 
+            else { tile.className = tile.className.replace(/bg-[a-z]+-\d+/g, ''); tile.classList.add(modData.color.split(' ')[0]); badge?.classList.add('hidden'); }
+            checkAllTilesM3();
+        }
+
+        window.checkAllTilesM3 = function() {
+            let allComplete = true; m3QualitativeData.forEach(mod => mod.q.forEach(q => { if(!document.getElementById(`m3_sel_${q.id}`).value) allComplete = false; }));
+            const targetSelected = document.querySelector('input[name="target_m3"]:checked'); document.getElementById('btn-save-obs').disabled = !(allComplete && targetSelected); 
+        }
+
+        window.saveObservationM3 = function() {
+            const target = document.querySelector('input[name="target_m3"]:checked').value; 
+            if (m3Counts[target] >= 3) { alert("Ya alcanzaste el límite (3 sujetos) para este target."); return; }
+            let obs = { target: target, timestamp: Date.now() }; 
+            m3QualitativeData.forEach(mod => mod.q.forEach(q => { let sel = document.getElementById(`m3_sel_${q.id}`); obs[q.id] = sel.value; sel.value = ""; }));
+            m3Obs.push(obs); m3Counts[target]++; localStorage.setItem('wolf_m3_data_qual', JSON.stringify(m3Obs)); localStorage.setItem('wolf_m3_counts_qual', JSON.stringify(m3Counts)); updateUIM3(); 
+            document.querySelector('input[name="target_m3"]:checked').checked = false; m3QualitativeData.forEach(mod => checkTileCompletionM3(mod.id)); 
+            const btn = document.getElementById('btn-save-obs'); btn.innerHTML = "✅ ¡Sujeto Guardado!"; setTimeout(() => { btn.innerHTML = "📥 Guardar Observación"; checkAllTilesM3(); }, 1500);
+        }
+
+        function updateUIM3() {
+            document.getElementById('count-me').innerText = m3Counts.me; document.getElementById('count-c1').innerText = m3Counts.c1; document.getElementById('count-c2').innerText = m3Counts.c2;
+            ['me', 'c1', 'c2'].forEach(t => { 
+                const numEl = document.getElementById(`count-${t}`).parentElement; const radio = document.getElementById(`radio_${t}`);
+                if (m3Counts[t] >= 3) { numEl.className = "bg-emerald-50 border border-emerald-200 text-emerald-700 px-3 py-1 rounded text-xs font-black shadow-inner"; if(radio) { radio.disabled = true; radio.checked = false; } } 
+                else { numEl.className = t==='me' ? "bg-blue-50 border border-blue-200 text-blue-800 px-3 py-1 rounded text-xs font-black shadow-inner" : "bg-slate-50 border border-slate-200 text-slate-700 px-3 py-1 rounded text-xs font-black shadow-inner"; if(radio) radio.disabled = false; } 
+            }); checkAllTilesM3();
+        }
+
+        function calcularScoreM3(mod, target) {
+            return m3Obs.filter(o => o.target === target).reduce((acc, curr) => {
+                let scoreParcial = 0; mod.q.forEach(q => { let val = curr[q.id]; if (val && val !== "N/A") { let idx = q.opts.indexOf(val); scoreParcial += Math.max(0, 3 - idx); } });
+                return acc + scoreParcial;
+            }, 0);
+        }
+
+        // =========================================================================================
+        // FIX 4 APLICADO: CORRECCIÓN DE CÓDIGO (GAP a NUMÉRICO)
+        // =========================================================================================
+        window.injectM3TasksToM4 = function() {
+            let planAccion = [];
+            try { planAccion = JSON.parse(localStorage.getItem('m4_plan_accion')) || []; if(!Array.isArray(planAccion)) planAccion = []; } catch(e){ planAccion = []; }
+            let nuevasTareas = 0;
+            m3QualitativeData.forEach(mod => {
+                let blockNum = mod.id.replace('sm', ''); // Transforma "sm1" a "1"
+                let meScore = calcularScoreM3(mod, 'me'); let c1Score = calcularScoreM3(mod, 'c1'); let c2Score = calcularScoreM3(mod, 'c2');
+                if (meScore < Math.max(c1Score, c2Score)) {
+                    let code = `M3-${blockNum}-0`; // Estandarizado a formato numérico puro (0 significa Brecha de bloque)
+                    if (!planAccion.some(t => t.code === code)) {
+                        planAccion.unshift({ id: Date.now() + Math.floor(Math.random()*1000), code: code, title: `Mejorar CX en: ${mod.title}`, desc: `Hallazgo M3 Etnografía. Competencia exhibe mejores prácticas en este bloque.`, owner: "Gerencia", category: "Marketing", start: new Date().toISOString().split('T')[0], end: "", budget: "0", qty: "1", status: "Pendiente", kpi: "Mejora Percepción", result: "Completado", priority: "Media", justification: "" });
+                        nuevasTareas++;
+                    }
+                }
+                mod.q.forEach((q, index) => {
+                    if (q.vital) {
+                        let hasNA = m3Obs.some(o => o.target === 'me' && o[q.id] === "N/A");
+                        if (hasNA) {
+                            let code = `M3-${blockNum}-${index + 1}`; // Estandarizado a formato numérico puro (índice pregunta vital)
+                            if (!planAccion.some(t => t.code === code)) {
+                                planAccion.unshift({ id: Date.now() + Math.floor(Math.random()*1000) + index, code: code, title: `Auditar CX: ${q.text.replace(/^\d+\.\s*/, '')}`, desc: `Hallazgo M3 Etnografía. Variable vital marcada como N/A o no observable. Urgente.`, owner: "Gerencia", category: "Operaciones", start: new Date().toISOString().split('T')[0], end: "", budget: "0", qty: "1", status: "Pendiente", kpi: "Auditoría", result: "Completado", priority: "Alta", justification: "" });
+                                nuevasTareas++;
+                            }
+                        }
+                    }
+                });
+            });
+            if (nuevasTareas > 0) localStorage.setItem('m4_plan_accion', JSON.stringify(planAccion)); 
+        }
+
+        window.generateReportM3 = function() {
+            try { injectM3TasksToM4(); } catch (err) { console.error("Fallo al inyectar tareas M3->M4:", err); }
+            
+            document.getElementById('capture-section-m3').classList.add('hidden'); 
+            document.getElementById('dashboard-section-m3').classList.remove('hidden');
+            
+            try {
+                let elName = document.getElementById('client-name').value.trim();
+                let mName = elName === "" ? "Mi Empresa" : elName;
+                let elC1 = document.getElementById('c1_name').value.trim();
+                let c1Name = elC1 === "" ? "Comp 1" : elC1;
+                let elC2 = document.getElementById('c2_name').value.trim();
+                let c2Name = elC2 === "" ? "Comp 2" : elC2;
+                
+                document.getElementById('dashboard-subtitle-m3').innerText = `Muestra total: ${m3Counts.me + m3Counts.c1 + m3Counts.c2} sujetos. (${m3Counts.me} de ${mName}, ${m3Counts.c1} de ${c1Name}, ${m3Counts.c2} de ${c2Name})`;
+                
+                const dashboard = document.getElementById('dashboard-content-m3');
+                dashboard.innerHTML = '';
+
+                m3QualitativeData.forEach(mod => {
+                    let colorBase = mod.color.split(' ')[0];
+                    let html = `<div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm"><h3 class="text-sm font-black text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-200 pb-2 flex items-center gap-2"><span class="w-3 h-3 rounded-full ${colorBase}"></span> ${mod.title}</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">`;
+                    mod.q.forEach(q => {
+                        html += `<div class="bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-inner flex flex-col gap-3"><p class="text-[11px] font-bold text-slate-600 uppercase tracking-wide leading-snug">${q.text.replace(/^\d+\.\s*/, '')}</p><div class="space-y-3">`;
+                        q.opts.forEach(opt => {
+                            let mCount = m3Obs.filter(o => o.target === 'me' && o[q.id] === opt).length;
+                            let c1Count = m3Obs.filter(o => o.target === 'c1' && o[q.id] === opt).length;
+                            let c2Count = m3Obs.filter(o => o.target === 'c2' && o[q.id] === opt).length;
+                            
+                            let mPerc = m3Counts.me > 0 ? Math.round((mCount / m3Counts.me) * 100) : 0;
+                            let c1Perc = m3Counts.c1 > 0 ? Math.round((c1Count / m3Counts.c1) * 100) : 0;
+                            let c2Perc = m3Counts.c2 > 0 ? Math.round((c2Count / m3Counts.c2) * 100) : 0;
+                            
+                            let isNA = (opt === "N/A");
+                            let meColor = isNA ? 'bg-slate-300' : 'bg-blue-500'; let c1Color = isNA ? 'bg-slate-300' : 'bg-slate-400'; let c2Color = isNA ? 'bg-slate-400' : 'bg-slate-800';
+
+                            html += `<div><div class="text-[10px] font-bold ${isNA ? 'text-slate-400 italic' : 'text-slate-800'} mb-1 truncate" title="${opt}">${opt}</div><div class="flex flex-col gap-0.5"><div class="flex items-center gap-2"><div class="w-full bg-slate-200 h-1 rounded-full"><div class="${meColor} h-1 rounded-full" style="width: ${mPerc}%"></div></div><span class="text-[9px] text-slate-500 font-bold w-6 text-right">${mPerc}%</span></div><div class="flex items-center gap-2"><div class="w-full bg-slate-200 h-1 rounded-full"><div class="${c1Color} h-1 rounded-full" style="width: ${c1Perc}%"></div></div><span class="text-[9px] text-slate-500 font-bold w-6 text-right">${c1Perc}%</span></div><div class="flex items-center gap-2"><div class="w-full bg-slate-200 h-1 rounded-full"><div class="${c2Color} h-1 rounded-full" style="width: ${c2Perc}%"></div></div><span class="text-[9px] text-slate-500 font-bold w-6 text-right">${c2Perc}%</span></div></div></div>`;
+                        });
+                        html += `</div></div>`;
+                    });
+                    html += `</div></div>`;
+                    dashboard.innerHTML += html;
+                });
+            } catch (err) { console.error("Error renderizando dashboard M3:", err); }
+            
+            setTimeout(() => { document.getElementById('dashboard-section-m3').scrollIntoView({ behavior: 'smooth' }); }, 100);
+        }
+
+        // =========================================================================================
+        // CONTROLADOR DE MODALES (GRÚA GLOBAL M1, M2, M3)
+        // =========================================================================================
+        window.openDynamicModal = function(mod, id, title, colorClass, iconSvg = '') {
+            activeModalContext = { module: mod, id: id };
+            document.getElementById('section-modal-title').innerText = title;
+            const header = document.getElementById('section-modal-header');
+            header.className = `px-8 py-5 flex justify-between items-center transition-colors duration-300 ${colorClass}`;
+            const iconContainer = document.getElementById('modal-icon-container');
+            if (iconSvg) { iconContainer.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${iconSvg}"></path></svg>`; iconContainer.classList.remove('hidden'); } else { iconContainer.classList.add('hidden'); }
+            const m2Legend = document.getElementById('m2-legend'); if (mod === 'm2') m2Legend.classList.remove('hidden'); else m2Legend.classList.add('hidden');
+            const sourceWrapper = document.getElementById(`wrapper-${mod}-${id}`); const modalBody = document.getElementById('section-modal-body'); modalBody.innerHTML = '';
+            if (sourceWrapper) modalBody.appendChild(sourceWrapper); else modalBody.innerHTML = '<p class="text-red-500 font-bold text-center py-10">Error de renderizado.</p>';
+            const modal = document.getElementById('section-modal'); modal.classList.remove('hidden'); modal.classList.add('flex');
+        };
+
+        window.closeDynamicModal = function() {
+            if (!activeModalContext || !activeModalContext.module) return;
+            const { module, id } = activeModalContext;
+            const wrapper = document.getElementById(`wrapper-${module}-${id}`); const pool = document.getElementById(`hidden-pool-${module}`);
+            if (wrapper && pool) pool.appendChild(wrapper); 
+            const modal = document.getElementById('section-modal'); modal.classList.add('hidden'); modal.classList.remove('flex');
+            if (module === 'm1') validateSectionM1(id); if (module === 'm2') validateSectionM2(id); if (module === 'm3') checkTileCompletionM3(id);
+            activeModalContext = { module: null, id: null };
+        };
+
+        window.clearCurrentModal = function() {
+            if (!activeModalContext || !activeModalContext.module) return; const { module, id } = activeModalContext; const wrapper = document.getElementById(`wrapper-${module}-${id}`); if (!wrapper) return;
+            if (confirm("¿Estás seguro de limpiar todos los datos de esta lámina? Se borrará tu progreso aquí.")) {
+                if (module === 'm1') { wrapper.querySelectorAll('input[type="number"], input[type="text"]').forEach(el => el.value = ""); wrapper.querySelectorAll('select').forEach(el => { el.value = "si"; el.dispatchEvent(new Event('change')); }); validateSectionM1(id); } 
+                else if (module === 'm2') { wrapper.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false); validateSectionM2(id); } 
+                else if (module === 'm3') { wrapper.querySelectorAll('select').forEach(el => el.value = ""); checkTileCompletionM3(id); }
+            }
+        };
+
+        // =========================================================================================
+        // SISTEMA M4: GESTOR DE PLAN DE ACCIÓN Y KANBAN INTEGRADO
+        // =========================================================================================
+        window.m4PlanAccion = [];
+        window.m4FilteredPlan = []; 
+        window.m4CurrentPage = 1; window.m4ItemsPerPage = 10;
+        window.m4IsKanbanView = false; window.m4DomSelectActivo = null; 
+        window.m4SearchTerm = ""; window.m4IsDashboardVisible = true;
+
+        window.autoResizeM4 = function(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight) + 'px'; }
+        window.searchTasksM4 = function(val) { window.m4SearchTerm = val.toLowerCase(); window.m4CurrentPage = 1; window.renderAllM4(); }
+
+        window.toggleDashboardM4 = function() {
+            window.m4IsDashboardVisible = !window.m4IsDashboardVisible;
+            const dash = document.getElementById('dashboard-container');
+            const btnText = document.getElementById('text-toggle-dash');
+            if(window.m4IsDashboardVisible) { dash.classList.remove('hidden'); btnText.innerText = "Colapsar Panel de Salud"; } 
+            else { dash.classList.add('hidden'); btnText.innerText = "Expandir Panel de Salud"; }
+        }
+
+        window.getComputedStateM4 = function(task) {
+            let baseStatus = task.status || "Pendiente";
+            if(baseStatus === "Cumplido" || baseStatus === "NoCumplido") return { status: baseStatus, isVencida: false, daysLeft: null, kanbanStatus: baseStatus };
+            if(!task.end) return { status: baseStatus, isVencida: false, daysLeft: null, kanbanStatus: baseStatus };
+            const today = new Date(); today.setHours(0,0,0,0);
+            const endDate = new Date(task.end); endDate.setHours(0,0,0,0);
+            const diffDays = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+            if(diffDays < 0) return { status: baseStatus, isVencida: true, daysLeft: diffDays, kanbanStatus: "Vencida" };
+            return { status: baseStatus, isVencida: false, daysLeft: diffDays, kanbanStatus: baseStatus };
+        }
+
+        window.simularExtraccionM4 = function() {
+            if(confirm("Se inyectarán hallazgos de prueba. ¿Proceder?")) {
+                const todayStr = new Date().toISOString().split('T')[0];
+                let datePast = new Date(); datePast.setDate(datePast.getDate() - 5); const pastStr = datePast.toISOString().split('T')[0];
+                let dateNear = new Date(); dateNear.setDate(dateNear.getDate() + 2); const nearStr = dateNear.toISOString().split('T')[0];
+                let dateFuture = new Date(); dateFuture.setDate(dateFuture.getDate() + 14); const futureStr = dateFuture.toISOString().split('T')[0];
+                window.m4PlanAccion = [
+                    { id: Date.now()+1, code: "M1-1-2", priority: "Alta", status: "Pendiente", title: "Mejorar: ¿Tiene la empresa una Propuesta Única de Valor (PUV) definida?", desc: "Hallazgo M1 (1. Estratégico). Observación:", owner: "Gerencia", category: "Operaciones", start: "2026-07-01", end: "", budget: "0", qty: "1", kpi: "Corrección", result: "Completado", justification: "" },
+                    { id: Date.now()+2, code: "M2-1-1", priority: "Media", status: "Pendiente", title: "Mejorar: 1. Impacto Fachada", desc: "Hallazgo MPC (Valor Percibido). Mi calificación: 1/3.", owner: "Gerencia", category: "Estrategia", start: "2026-07-01", end: "", budget: "0", qty: "1", kpi: "Superar al rival", result: "Completado", justification: "" },
+                    { id: Date.now()+3, code: "M2-1-4", priority: "Media", status: "Pendiente", title: "Mejorar: 4. Refuerzos", desc: "Hallazgo MPC (Valor Percibido). Mi calificación: 1/3.", owner: "Gerencia", category: "Estrategia", start: "2026-07-01", end: "", budget: "0", qty: "1", kpi: "Superar al rival", result: "Completado", justification: "" },
+                    { id: Date.now()+4, code: "M3-2-2", priority: "Alta", status: "NoCumplido", title: "Definir política de precios", desc: "M3: 'N/A' vital.", owner: "Admin", category: "Finanzas", start: pastStr, end: pastStr, budget: "15000", qty: "1", kpi: "Impresos", result: "Transparencia", justification: "Sin presupuesto este mes" }
+                ]; window.saveDataM4(); window.renderAllM4();
+            }
+        }
+
+        window.saveDataM4 = function() { localStorage.setItem('m4_plan_accion', JSON.stringify(window.m4PlanAccion)); window.updateKPIsM4(); }
+
+        window.toggleViewM4 = function() {
+            window.m4IsKanbanView = !window.m4IsKanbanView; 
+            const btnView = document.getElementById('text-toggle-view');
+            const viewTable = document.getElementById('view-table');
+            const viewKanban = document.getElementById('view-kanban');
+            if(window.m4IsKanbanView) { btnView.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg> Vista Tabla`; viewTable.classList.add('hidden'); viewKanban.classList.remove('hidden'); viewKanban.classList.add('flex'); } 
+            else { btnView.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path></svg> Vista Kanban`; viewKanban.classList.remove('flex'); viewKanban.classList.add('hidden'); viewTable.classList.remove('hidden'); }
+            window.renderAllM4();
+        }
+
+        window.handleStatusChangeM4 = function(sel, id, oldStatus) {
+            const n = sel.value;
+            if (n === "NoCumplido") { window.m4DomSelectActivo = sel; document.getElementById('just-task-id').value = id; document.getElementById('just-old-status').value = oldStatus; document.getElementById('just-text').value = ''; document.getElementById('justification-modal').classList.remove('hidden'); document.getElementById('justification-modal').classList.add('flex'); } 
+            else { window.updateTaskInlineM4(id, 'status', n); }
+        }
+        
+        window.saveJustificationM4 = function() {
+            const id = document.getElementById('just-task-id').value; const txt = document.getElementById('just-text').value.trim();
+            if(!txt) return alert("Escribe justificación.");
+            const idx = window.m4PlanAccion.findIndex(t => t.id == id);
+            if(idx > -1) { window.m4PlanAccion[idx].status = "NoCumplido"; window.m4PlanAccion[idx].justification = txt; window.saveDataM4(); window.renderAllM4(); }
+            document.getElementById('justification-modal').classList.add('hidden'); document.getElementById('justification-modal').classList.remove('flex');
+        }
+        
+        window.cancelJustificationM4 = function() {
+            if(window.m4DomSelectActivo) { window.m4DomSelectActivo.value = document.getElementById('just-old-status').value; window.m4DomSelectActivo = null; }
+            document.getElementById('justification-modal').classList.add('hidden'); document.getElementById('justification-modal').classList.remove('flex');
+        }
+
+        window.updateTaskInlineM4 = function(id, field, value) {
+            const idx = window.m4PlanAccion.findIndex(t => t.id == id);
+            if(idx > -1) { window.m4PlanAccion[idx][field] = value; if(field === 'status' && value !== 'NoCumplido') window.m4PlanAccion[idx].justification = ""; window.saveDataM4(); if(field === 'status' || field === 'end') window.renderAllM4(); }
+        }
+
+        window.openTaskModalM4 = function(id = null) {
+            if(id) { const t = window.m4PlanAccion.find(x => x.id === id); document.getElementById('task-id').value = t.id; document.getElementById('task-title').value = t.title; document.getElementById('task-desc').value = t.desc; document.getElementById('task-owner').value = t.owner; document.getElementById('task-category').value = t.category || "Estrategia"; document.getElementById('task-start').value = t.start; document.getElementById('task-end').value = t.end; document.getElementById('task-budget').value = t.budget; document.getElementById('task-qty').value = t.qty; document.getElementById('task-status').value = t.status; document.getElementById('task-kpi').value = t.kpi; document.getElementById('task-result').value = t.result; document.getElementById('task-priority').value = t.priority; } 
+            else { document.getElementById('task-id').value = ''; document.querySelectorAll('.input-modal').forEach(el => el.value = ''); document.getElementById('task-category').value = "Estrategia"; document.getElementById('task-status').value = "Pendiente"; document.getElementById('task-priority').value = "Media"; }
+            document.getElementById('task-modal').classList.remove('hidden'); document.getElementById('task-modal').classList.add('flex');
+        }
+        window.closeTaskModalM4 = function() { document.getElementById('task-modal').classList.add('hidden'); document.getElementById('task-modal').classList.remove('flex'); }
+
+        window.saveTaskM4 = function() {
+            const id = document.getElementById('task-id').value; const title = document.getElementById('task-title').value.trim();
+            if(!title) return alert("Nombre obligatorio.");
+            const tD = { title: title, desc: document.getElementById('task-desc').value, owner: document.getElementById('task-owner').value, category: document.getElementById('task-category').value, start: document.getElementById('task-start').value, end: document.getElementById('task-end').value, budget: document.getElementById('task-budget').value, qty: document.getElementById('task-qty').value, status: document.getElementById('task-status').value, kpi: document.getElementById('task-kpi').value, result: document.getElementById('task-result').value, priority: document.getElementById('task-priority').value, justification: "" };
+            if(id) { const idx = window.m4PlanAccion.findIndex(t => t.id == id); tD.id = parseInt(id); tD.code = window.m4PlanAccion[idx].code; window.m4PlanAccion[idx] = tD; } 
+            else { tD.id = Date.now(); tD.code = "MANUAL"; window.m4PlanAccion.unshift(tD); }
+            window.saveDataM4(); window.closeTaskModalM4(); window.renderAllM4();
+        }
+        window.deleteTaskM4 = function(id) { if(confirm("¿Eliminar tarea del plan de acción?")) { window.m4PlanAccion = window.m4PlanAccion.filter(t => t.id != id); window.saveDataM4(); window.renderAllM4(); } }
+        window.changePageM4 = function(dir) { window.m4CurrentPage += dir; window.renderAllM4(); }
+
+        window.renderAllM4 = function() {
+            window.m4FilteredPlan = window.m4PlanAccion.filter(t => (t.title && t.title.toLowerCase().includes(window.m4SearchTerm)) || (t.code && t.code.toLowerCase().includes(window.m4SearchTerm)) || (t.owner && t.owner.toLowerCase().includes(window.m4SearchTerm)));
+            window.m4FilteredPlan.sort((a, b) => { if (a.priority === "Alta" && b.priority !== "Alta") return -1; if (a.priority !== "Alta" && b.priority === "Alta") return 1; return b.id - a.id; });
+            window.m4FilteredPlan.forEach(t => { t.computed = window.getComputedStateM4(t); });
+            if(window.m4IsKanbanView) window.renderKanbanM4(); else window.renderTableM4();
+            window.updateKPIsM4();
+        }
+
+        window.renderTableM4 = function() {
+            const tbody = document.getElementById('table-body'); tbody.innerHTML = ''; 
+            document.getElementById('table-task-count').innerText = `${window.m4PlanAccion.length} TAREAS`;
+            const startIdx = (window.m4CurrentPage - 1) * window.m4ItemsPerPage; const currentTasks = window.m4FilteredPlan.slice(startIdx, startIdx + window.m4ItemsPerPage);
+
+            currentTasks.forEach((t, i) => {
+                let comp = t.computed; let sClass = "status-opt-pendiente";
+                if(comp.status === "Proceso") sClass = "status-opt-proceso"; if(comp.status === "Cumplido") sClass = "status-opt-cumplido"; if(comp.status === "NoCumplido") sClass = "status-opt-nocumplido"; if(comp.isVencida) sClass = "bg-red-100 text-red-700 border-red-300";
+                
+                let prioBorder = t.priority === "Alta" ? "border-l-[3px] border-red-500" : "";
+                let codeBadge = t.code !== "MANUAL" ? `<span class="bg-slate-200 text-slate-700 text-[10px] font-black px-2 py-1 rounded tracking-widest uppercase block text-center shadow-inner">${t.code}</span>` : `<span class="bg-indigo-100 text-indigo-700 text-[10px] font-black px-2 py-1 rounded tracking-widest uppercase block text-center shadow-inner">MANUAL</span>`;
+                let justHtml = (t.status === "NoCumplido" && t.justification) ? `<div class="tooltip inline-block ml-1 cursor-help absolute right-0 top-3"><svg class="w-3.5 h-3.5 text-slate-600" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg><span class="tooltip-text shadow-lg border border-slate-600"><strong>Justificación:</strong><br/>${t.justification}</span></div>` : '';
+
+                tbody.innerHTML += `
+                    <tr class="table-row ${prioBorder}">
+                        <td class="p-1 px-1.5 align-middle text-center font-black text-slate-400 text-[10px]">${startIdx + i + 1}</td>
+                        <td class="p-1 px-1.5 align-middle">${codeBadge}</td>
+                        <td class="p-1 px-1.5 align-top"><textarea rows="2" oninput="window.autoResizeM4(this)" onchange="window.updateTaskInlineM4(${t.id}, 'title', this.value)" class="textarea-cell font-bold text-slate-800">${t.title}</textarea></td>
+                        <td class="p-1 px-1.5 align-top"><textarea rows="2" oninput="window.autoResizeM4(this)" onchange="window.updateTaskInlineM4(${t.id}, 'desc', this.value)" class="textarea-cell text-slate-500">${t.desc}</textarea></td>
+                        <td class="p-1 px-1.5 align-middle"><input type="text" value="${t.owner}" onchange="window.updateTaskInlineM4(${t.id}, 'owner', this.value)" class="input-cell font-bold text-indigo-700 text-center"></td>
+                        <td class="p-1 px-1.5 align-middle"><select onchange="window.updateTaskInlineM4(${t.id}, 'category', this.value)" class="input-cell text-slate-700 font-black uppercase text-[9px] appearance-none text-center cursor-pointer hover:bg-slate-100"><option value="Estrategia" ${t.category==='Estrategia'?'selected':''}>Estrategia ▾</option><option value="Operaciones" ${t.category==='Operaciones'?'selected':''}>Operaciones ▾</option><option value="Marketing" ${t.category==='Marketing'?'selected':''}>Marketing ▾</option><option value="Finanzas" ${t.category==='Finanzas'?'selected':''}>Finanzas ▾</option><option value="Infraestructura" ${t.category==='Infraestructura'?'selected':''}>Infraes. ▾</option></select></td>
+                        <td class="p-1 px-1.5 align-middle"><input type="date" value="${t.start}" onchange="window.updateTaskInlineM4(${t.id}, 'start', this.value)" class="input-cell text-[9px] text-slate-500 text-center"></td>
+                        <td class="p-1 px-1.5 align-middle"><input type="date" value="${t.end}" onchange="window.updateTaskInlineM4(${t.id}, 'end', this.value)" class="input-cell text-[9px] text-center ${comp.isVencida ? 'text-red-600 font-bold' : 'text-slate-500'}"></td>
+                        <td class="p-1 px-1.5 align-middle"><div class="flex items-center"><span class="text-slate-400 pl-1 text-[10px]">$</span><input type="text" value="${t.budget}" onchange="window.updateTaskInlineM4(${t.id}, 'budget', this.value)" class="input-cell"></div></td>
+                        <td class="p-1 px-1.5 align-middle"><input type="text" value="${t.qty}" onchange="window.updateTaskInlineM4(${t.id}, 'qty', this.value)" class="input-cell text-center"></td>
+                        <td class="p-1 px-1.5 align-top"><textarea rows="2" oninput="window.autoResizeM4(this)" onchange="window.updateTaskInlineM4(${t.id}, 'kpi', this.value)" class="textarea-cell">${t.kpi}</textarea></td>
+                        <td class="p-1 px-1.5 align-top"><textarea rows="2" oninput="window.autoResizeM4(this)" onchange="window.updateTaskInlineM4(${t.id}, 'result', this.value)" class="textarea-cell">${t.result}</textarea></td>
+                        <td class="p-1 px-1.5 align-middle text-center relative pr-4"><select onchange="window.handleStatusChangeM4(this, ${t.id}, '${t.status}')" class="status-select shadow-sm border ${sClass}"><option value="Pendiente" ${t.status==='Pendiente'?'selected':''}>PENDIENTE</option><option value="Proceso" ${t.status==='Proceso'?'selected':''}>EN PROCESO</option><option value="Cumplido" ${t.status==='Cumplido'?'selected':''}>CUMPLIDO</option><option value="NoCumplido" ${t.status==='NoCumplido'?'selected':''}>NO CUMPLIDO</option></select><div class="mt-0.5 text-[8px] font-bold ${comp.isVencida ? 'text-red-500' : 'hidden'}">VENCIDA</div>${justHtml}</td>
+                    </tr>`;
+            });
+            document.getElementById('pagination-info').innerText = `Mostrando ${window.m4FilteredPlan.length===0?0:startIdx+1} - ${Math.min(startIdx + window.m4ItemsPerPage, window.m4FilteredPlan.length)} de ${window.m4FilteredPlan.length}`;
+            document.getElementById('btn-prev').disabled = window.m4CurrentPage === 1; document.getElementById('btn-next').disabled = (startIdx + window.m4ItemsPerPage) >= window.m4FilteredPlan.length;
+            setTimeout(() => { document.querySelectorAll('.textarea-cell').forEach(el => window.autoResizeM4(el)); }, 50);
+        }
+
+        window.renderKanbanM4 = function() {
+            const cols = { "Pendiente": "", "Proceso": "", "Vencida": "", "Cumplido": "", "NoCumplido": "" };
+            const counts = { "Pendiente": 0, "Proceso": 0, "Vencida": 0, "Cumplido": 0, "NoCumplido": 0 };
+            window.m4FilteredPlan.forEach(t => {
+                let comp = t.computed; let s = comp.kanbanStatus; if(typeof cols[s] === 'undefined') s = "Pendiente"; counts[s]++;
+                let prioColor = t.priority === "Alta" ? "bg-red-500" : (t.priority === "Media" ? "bg-amber-500" : "bg-emerald-500");
+                let codeBadge = `<span class="text-[9px] font-black bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded text-slate-600">${t.code}</span>`;
+                let justHtml = (t.status === "NoCumplido" && t.justification) ? `<div class="text-[9px] text-slate-200 bg-slate-800 p-1.5 rounded mt-1.5 border border-slate-600 italic leading-tight">"${t.justification}"</div>` : '';
+                let warningBadge = comp.isVencida ? `<span class="text-[8px] font-black bg-red-100 text-red-700 px-1.5 py-0.5 rounded ml-1">VENCIDA</span>` : '';
+
+                cols[s] += `
+                    <div id="${t.id}" class="kanban-card shrink-0 bg-white p-2.5 rounded-md shadow-sm border ${comp.isVencida ? 'border-red-400' : 'border-slate-200'} flex flex-col gap-1.5 relative overflow-hidden" draggable="true" ondragstart="window.dragM4(event)">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 ${prioColor}"></div>
+                        <div class="flex justify-between items-start pl-1.5">${codeBadge} ${warningBadge}
+                            <div class="flex gap-1 ml-auto"><button onclick="window.openTaskModalM4(${t.id})" class="text-slate-400 hover:text-indigo-600"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button><button onclick="window.deleteTaskM4(${t.id})" class="text-slate-400 hover:text-red-600"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div>
+                        </div>
+                        <h4 class="text-[11px] font-bold text-slate-800 leading-snug pl-1.5 break-words">${t.title}</h4>${justHtml}
+                        <div class="flex justify-between items-center mt-1 pt-1.5 border-t border-slate-100 pl-1.5">
+                            <span class="text-[9px] font-black text-slate-500 uppercase">${t.category || 'N/A'}</span>
+                            <span class="text-[9px] font-bold text-indigo-700 flex items-center gap-1">${t.owner || 'N/A'}</span>
+                        </div>
+                    </div>`;
+            });
+            document.getElementById('col-Pendiente').innerHTML = cols["Pendiente"]; document.getElementById('count-kanban-pendiente').innerText = counts["Pendiente"];
+            document.getElementById('col-Proceso').innerHTML = cols["Proceso"]; document.getElementById('count-kanban-proceso').innerText = counts["Proceso"];
+            document.getElementById('col-Vencida').innerHTML = cols["Vencida"]; document.getElementById('count-kanban-vencida').innerText = counts["Vencida"];
+            document.getElementById('col-Cumplido').innerHTML = cols["Cumplido"]; document.getElementById('count-kanban-cumplido').innerText = counts["Cumplido"];
+            document.getElementById('col-NoCumplido').innerHTML = cols["NoCumplido"]; document.getElementById('count-kanban-nocumplido').innerText = counts["NoCumplido"]; 
+        }
+
+        window.allowDropM4 = function(ev) { ev.preventDefault(); if(ev.target.classList.contains('kanban-column')) ev.target.classList.add('drag-over'); }
+        window.dragM4 = function(ev) { ev.dataTransfer.setData("text", ev.target.id); setTimeout(() => ev.target.classList.add('dragging'), 0); }
+        window.dropM4 = function(ev) {
+            ev.preventDefault(); document.querySelectorAll('.kanban-column').forEach(c => c.classList.remove('drag-over'));
+            let data = ev.dataTransfer.getData("text"); let card = document.getElementById(data); if(card) card.classList.remove('dragging');
+            let dropZone = ev.target; while(dropZone && !dropZone.classList.contains('kanban-column') && dropZone.tagName !== 'BODY') { dropZone = dropZone.parentNode; }
+            if(dropZone && dropZone.classList.contains('kanban-column')) {
+                let newStatus = dropZone.id.split('-')[1]; const task = window.m4PlanAccion.find(t => t.id == data); let oldComp = window.getComputedStateM4(task).kanbanStatus;
+                if (newStatus === "NoCumplido") { document.getElementById('just-task-id').value = data; document.getElementById('just-old-status').value = task.status; document.getElementById('just-text').value = ''; document.getElementById('justification-modal').classList.remove('hidden'); document.getElementById('justification-modal').classList.add('flex'); } 
+                else if (newStatus === "Vencida") { task.status = (task.status === "Proceso") ? "Proceso" : "Pendiente"; let yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1); task.end = yesterday.toISOString().split('T')[0]; task.justification = ""; window.saveDataM4(); window.renderAllM4(); } 
+                else { if(oldComp === "Vencida" && (newStatus === "Pendiente" || newStatus === "Proceso")) { task.end = ""; } task.status = newStatus; task.justification = ""; window.saveDataM4(); window.renderAllM4(); }
+            }
+        }
+        document.addEventListener('dragleave', (ev) => { if(ev.target.classList.contains('kanban-column')) ev.target.classList.remove('drag-over'); });
+
+        window.updateKPIsM4 = function() {
+            const total = window.m4PlanAccion.length; let cump = 0, proc = 0, pend = 0, fail = 0, venc = 0; let cats = { "Estrategia": {t:0, c:0}, "Operaciones": {t:0, c:0}, "Marketing": {t:0, c:0}, "Finanzas": {t:0, c:0}, "Infraestructura": {t:0, c:0} }; let proximas = [];
+            window.m4PlanAccion.forEach(t => {
+                let comp = window.getComputedStateM4(t);
+                if(t.status === "Cumplido") cump++; else if(t.status === "NoCumplido") fail++; else if(comp.isVencida) venc++; else if(t.status === "Proceso") proc++; else pend++;
+                if(cats[t.category]) { cats[t.category].t++; if(t.status === "Cumplido") cats[t.category].c++; }
+                if(!comp.isVencida && t.status !== "Cumplido" && t.status !== "NoCumplido" && comp.daysLeft !== null) { proximas.push({ ...t, days: comp.daysLeft }); }
+            });
+            const pCump = total ? Math.round((cump/total)*100) : 0; document.getElementById('kpi-success-rate').innerText = `${pCump}%`; document.getElementById('kpi-risk-qty').innerText = fail + venc;
+            let healthText = "ÓPTIMO"; let healthColor = "#10b981"; if(pCump < 70) { healthText = "ALERTA"; healthColor = "#f59e0b"; } if(pCump < 40) { healthText = "CRÍTICO"; healthColor = "#ef4444"; } if(total === 0) { healthText = "SIN DATOS"; healthColor = "#cbd5e1"; }
+            document.getElementById('kpi-health-text').innerText = healthText; document.getElementById('kpi-health-text').style.color = healthColor; document.getElementById('kpi-health-bar').style.width = `${total ? Math.max(5, pCump) : 0}%`; document.getElementById('kpi-health-bar').style.backgroundColor = healthColor;
+            const wCump = total ? (cump/total)*100 : 0; const wProc = total ? (proc/total)*100 : 0; const wVenc = total ? (venc/total)*100 : 0; const wFail = total ? (fail/total)*100 : 0; const wPend = total ? (pend/total)*100 : 0;
+            let distHtml = ''; if(total === 0) distHtml = `<div class="segment bg-slate-200 w-full text-slate-400">0 Tareas</div>`; else { if(wCump > 0) distHtml += `<div class="segment color-cumplida" style="width: ${wCump}%">${cump}</div>`; if(wProc > 0) distHtml += `<div class="segment color-proceso" style="width: ${wProc}%">${proc}</div>`; if(wVenc > 0) distHtml += `<div class="segment color-vencida" style="width: ${wVenc}%">${venc}</div>`; if(wFail > 0) distHtml += `<div class="segment color-fail" style="width: ${wFail}%">${fail}</div>`; if(wPend > 0) distHtml += `<div class="segment color-pendiente" style="width: ${wPend}%">${pend}</div>`; }
+            document.getElementById('dist-bar').innerHTML = distHtml; document.getElementById('leg-cump').innerText = cump; document.getElementById('leg-proc').innerText = proc; document.getElementById('leg-venc').innerText = venc; document.getElementById('leg-fail').innerText = fail;
+            proximas.sort((a, b) => a.days - b.days); const expList = document.getElementById('expiring-list'); expList.innerHTML = '';
+            if(proximas.length === 0) expList.innerHTML = `<div class="h-full flex items-center justify-center"><p class="text-[10px] text-slate-400 italic text-center">Sin vencimientos cercanos.</p></div>`; else { proximas.slice(0,3).forEach(p => { let color = p.days <= 3 ? 'text-red-500 bg-red-50 border-red-100' : 'text-amber-600 bg-amber-50 border-amber-100'; expList.innerHTML += `<li class="flex justify-between items-center bg-white border border-slate-100 p-1.5 rounded shadow-sm shrink-0"><div class="flex flex-col overflow-hidden"><span class="text-[10px] font-bold text-slate-700 truncate leading-tight">${p.title}</span><span class="text-[8px] text-slate-500 font-bold">${p.owner || '-'}</span></div><div class="flex items-center gap-1 border ${color} px-1.5 py-0.5 rounded text-[9px] font-black shrink-0"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ${p.days} d</div></li>`; }); }
+            let catHTML = ''; let totalEff = 0; let actCats = 0; for (let c in cats) { if(cats[c].t > 0) { let p = (cats[c].c / cats[c].t) * 100; totalEff += p; actCats++; let colorClass = p < 40 ? 'bg-red-500' : (p < 80 ? 'bg-amber-500' : 'bg-emerald-500'); let arrow = p < 40 ? '<span class="text-red-500 font-black text-xs">↓</span>' : (p < 80 ? '<span class="text-amber-500 font-black text-xs">→</span>' : '<span class="text-emerald-500 font-black text-xs">↑</span>'); catHTML += `<div class="flex flex-col gap-0.5"><div class="flex justify-between items-center text-[9px] font-black text-slate-700 uppercase"><span>${c}</span><span>${Math.round(p)}%</span></div><div class="flex items-center gap-2"><div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden"><div class="${colorClass} h-full rounded-full" style="width: ${p}%"></div></div>${arrow}</div></div>`; } }
+            document.getElementById('cat-list').innerHTML = catHTML || '<div class="h-full flex items-center justify-center"><p class="text-[10px] text-slate-400 italic text-center">Registra tareas para medir.</p></div>'; document.getElementById('kpi-avg-efficiency').innerText = actCats ? `${Math.round(totalEff/actCats)}%` : '0%';
+            const prios = window.m4PlanAccion.filter(t => (t.priority === "Alta" || window.getComputedStateM4(t).isVencida) && t.status !== "Cumplido" && t.status !== "NoCumplido"); prios.sort((a, b) => { let aV = window.getComputedStateM4(a).isVencida ? 1 : 0; let bV = window.getComputedStateM4(b).isVencida ? 1 : 0; if(aV !== bV) return bV - aV; let aD = a.end ? new Date(a.end).getTime() : Infinity; let bD = b.end ? new Date(b.end).getTime() : Infinity; return aD - bD; });
+            const top5 = prios.slice(0, 5); const priosContainer = document.getElementById('critical-list'); priosContainer.innerHTML = '';
+            if(total > 0 && top5.length === 0) { priosContainer.innerHTML = `<div class="h-full flex flex-col items-center justify-center bg-emerald-50 rounded-lg border border-emerald-200 p-2 text-center"><span class="text-3xl mb-1">🏆</span><p class="text-emerald-600 font-black text-sm uppercase px-2 leading-tight">¡Felicitaciones!</p><p class="text-emerald-500 font-bold text-[10px] uppercase">Has cumplido la meta estratégica</p></div>`; } 
+            else if (total === 0) { priosContainer.innerHTML = `<div class="h-full flex items-center justify-center"><p class="text-[10px] text-slate-400 italic text-center">Sin tareas registradas.</p></div>`; } 
+            else { const icons = ['🔥', '⚡', '📉', '🎯', '🚨']; top5.forEach((p, i) => { let isV = window.getComputedStateM4(p).isVencida; priosContainer.innerHTML += `<div class="bg-white border ${isV ? 'border-red-300' : 'border-red-100'} p-1.5 rounded flex items-center gap-2 shadow-sm shrink-0"><div class="text-xs shrink-0 ${isV ? 'animate-pulse text-red-600' : ''}">${icons[i%5]}</div><div class="flex flex-col overflow-hidden w-full"><span class="text-[10px] font-black text-slate-800 truncate leading-none">${p.title}</span><div class="flex justify-between text-[8px] font-bold text-slate-500 mt-0.5 uppercase"><span>Resp: ${p.owner || '-'}</span><span class="${isV ? 'text-red-500 font-black':''}">${isV ? 'VENCIDA' : p.end || 'Sin Límite'}</span></div></div></div>`; }); }
+            const riskRate = total ? Math.round(((venc + fail)/total)*100) : 0; document.getElementById('kpi-dir-comp').innerText = `${pCump}%`; document.getElementById('kpi-dir-risk').innerText = `${riskRate}%`;
+            if(total === 0) document.getElementById('kpi-dir-trend').innerHTML = 'N/A'; else if(pCump > riskRate) document.getElementById('kpi-dir-trend').innerHTML = `<svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg> Positiva`; else document.getElementById('kpi-dir-trend').innerHTML = `<svg class="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg> Negativa`;
+        }
+
+        window.exportExcelM4 = function() {
+            if(window.m4PlanAccion.length === 0) return alert("No hay datos para exportar.");
+            const data = window.m4PlanAccion.map((t, idx) => ({ "#": idx+1, "Código": t.code, "Tarea": t.title, "Descripción": t.desc, "Responsable": t.owner, "Categoría": t.category, "Inicio": t.start, "Límite": t.end, "Presupuesto": t.budget, "Cant.": t.qty, "KPI": t.kpi, "Meta": t.result, "Estado": window.getComputedStateM4(t).status, "Prioridad": t.priority, "Justificación (Si falló)": t.justification || "N/A" }));
+            const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "PlanDeAccion"); XLSX.writeFile(wb, "Plan_Accion_Consultoria.xlsx");
+        }
+
+        window.exportWordM4 = function() {
+            if(window.m4PlanAccion.length === 0) return alert("No hay datos para exportar");
+            const bName = document.getElementById('client-name').value || 'MI EMPRESA';
+            const today = new Date().toLocaleDateString('es-ES');
+            let sortedPlan = [...window.m4PlanAccion].sort((a, b) => { if (a.priority === "Alta" && b.priority !== "Alta") return -1; if (a.priority !== "Alta" && b.priority === "Alta") return 1; return b.id - a.id; });
+            
+            let tableHTML = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Plan de Acción</title></head><body style="font-family: Arial, sans-serif;"><h1 style="color: #0f172a; text-transform: uppercase;">Plan de Acción Estratégico</h1><h3 style="color: #4f46e5;">Cliente: ${bName}</h3><p style="color: #64748b; font-size: 12px;">Fecha de Elaboración: ${today} | Total Tareas: ${sortedPlan.length}</p><br><table border='1' style='border-collapse: collapse; width: 100%; font-size: 11px; text-align: left;'><thead><tr style='background-color: #f1f5f9; color: #475569;'><th style="padding: 5px;">Cód.</th><th style="padding: 5px;">Tarea</th><th style="padding: 5px;">Descripción</th><th style="padding: 5px;">Responsable</th><th style="padding: 5px;">Fase</th><th style="padding: 5px;">Inicio</th><th style="padding: 5px;">Límite</th><th style="padding: 5px;">Ppto</th><th style="padding: 5px;">Cant.</th><th style="padding: 5px;">KPI</th><th style="padding: 5px;">Meta</th><th style="padding: 5px;">Estado Real</th><th style="padding: 5px;">Justificación Fallo</th></tr></thead><tbody>`;
+            sortedPlan.forEach(t => { let comp = window.getComputedStateM4(t); let prioStyle = t.priority === "Alta" ? "color: red; font-weight: bold;" : ""; let statusColor = comp.isVencida ? "color: red;" : (comp.status === "Cumplido" ? "color: green;" : "color: black;"); tableHTML += `<tr><td style="padding: 5px; font-weight: bold; background-color: #f8fafc;">${t.code}</td><td style="padding: 5px; ${prioStyle}">${t.title}</td><td style="padding: 5px;">${t.desc}</td><td style="padding: 5px;">${t.owner}</td><td style="padding: 5px;">${t.category}</td><td style="padding: 5px;">${t.start}</td><td style="padding: 5px; ${comp.isVencida ? 'color:red; font-weight:bold;' : ''}">${t.end}</td><td style="padding: 5px;">$${t.budget}</td><td style="padding: 5px; text-align: center;">${t.qty}</td><td style="padding: 5px;">${t.kpi}</td><td style="padding: 5px;">${t.result}</td><td style="padding: 5px; font-weight: bold; ${statusColor}">${comp.kanbanStatus.toUpperCase()}</td><td style="padding: 5px; font-style: italic; color: #b91c1c;">${t.justification || ''}</td></tr>`; });
+            tableHTML += `</tbody></table></body></html>`;
+            
+            let blob = new Blob(['\ufeff', tableHTML], { type: 'application/msword' }); let url = URL.createObjectURL(blob); let link = document.createElement('a'); link.href = url; link.download = `Plan_Accion_${bName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'Cliente'}.doc`; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        // =========================================================================================
+        // INICIALIZACIÓN GLOBAL
+        // =========================================================================================
+        window.onload = () => { 
+            if (typeof diagnosticData === 'undefined') { alert("⚠️ ERROR: 'database.js' no está cargando. Asegúrate de que el archivo esté en la misma carpeta."); return; }
+            if (typeof benchDataMaster !== 'undefined' && currentBenchMatrix.length === 0) currentBenchMatrix = benchDataMaster['moda'];
+            WolfDataBus.updateDatalist(); renderTilesM1(); checkIndustryType(); initM3(); 
+        };
+    </script>
+</body>
+</html>
