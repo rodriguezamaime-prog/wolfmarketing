@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wolf Marketing - Core System V25.8 (Master Architecture)</title>
+    <title>Wolf Marketing - Core System V25.10 (Master Architecture)</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -20,7 +20,6 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; margin: 0; line-height: 1.5; -webkit-font-smoothing: antialiased; overflow: hidden; }
         
-        /* ⚙️ MOTOR DE VISIBILIDAD (Reemplaza el código destructivo anterior) */
         #app-screen { display: none; opacity: 0; transition: opacity 0.3s ease; }
         #login-wrapper { display: flex; opacity: 1; transition: opacity 0.6s ease; }
         
@@ -35,14 +34,12 @@
         .input-light:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
         .input-light:read-only { background-color: #f1f5f9; color: #64748b; cursor: not-allowed; border-color: #e2e8f0; }
         
-        /* 🌕 EFECTO ECLIPSE (Login Background) */
         #login-wrapper { position: fixed; inset: 0; background-color: #020617; z-index: 500; justify-content: center; align-items: center; }
         .eclipse-halo { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 450px; height: 450px; border-radius: 50%; background: #020617; box-shadow: 0 0 100px 20px rgba(59, 130, 246, 0.3), inset 0 0 20px rgba(255,255,255,0.02); z-index: 10; animation: pulse-halo 4s infinite alternate; pointer-events: none; }
         @keyframes pulse-halo { 0% { box-shadow: 0 0 80px 10px rgba(59, 130, 246, 0.2), inset 0 0 20px rgba(255,255,255,0.02); transform: translate(-50%, -50%) scale(0.98); } 100% { box-shadow: 0 0 150px 30px rgba(96, 165, 250, 0.5), inset 0 0 30px rgba(255,255,255,0.05); transform: translate(-50%, -50%) scale(1.02); } }
         .login-card { position: relative; z-index: 20; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); }
         .font-serif-logo { font-family: 'Playfair Display', serif; }
 
-        /* Sidebar Dynamic Styles */
         #sidebar { transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .sidebar-expanded { width: 260px; }
         .sidebar-collapsed { width: 72px; }
@@ -60,13 +57,11 @@
         .tile-card { transition: all 0.2s ease; }
         .tile-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         
-        /* Custom Radios M3/M2 */
         .radio-target-m3:checked + div { background-color: #fef08a; border-color: #eab308; color: #854d0e; font-weight: 900; box-shadow: inset 0 0 0 1px #eab308; }
         .radio-val-1:checked + div { background-color: #ef4444; color:white; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4); } 
         .radio-val-2:checked + div { background-color: #eab308; color:white; box-shadow: 0 2px 4px rgba(234, 179, 8, 0.4); } 
         .radio-val-3:checked + div { background-color: #10b981; color:white; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.4); } 
         
-        /* M4 Colors */
         .color-cumplida { background-color: #10b981; } .text-cumplida { color: #10b981; }
         .color-proceso { background-color: #f59e0b; }  .text-proceso { color: #f59e0b; }
         .color-vencida { background-color: #ef4444; }  .text-vencida { color: #ef4444; }
@@ -78,7 +73,6 @@
         .gauge-container { position: relative; width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-top: 4px; }
         .gauge-fill { height: 100%; transition: width 0.5s ease, background-color 0.5s ease; border-radius: 4px; }
         
-        /* Spreadsheet Strict-9 */
         .table-compact { table-layout: fixed; width: 100%; border-collapse: collapse; }
         .table-compact th, .table-compact td { word-wrap: break-word; overflow-wrap: break-word; }
         .input-cell { background: transparent; border: 1px solid transparent; width: 100%; padding: 6px; border-radius: 4px; font-size: 11px; transition: all 0.2s; color: #1e293b; font-weight: 600; height: 100%; text-align: left; }
@@ -136,7 +130,7 @@
                 </div>
             </div>
 
-            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-6">Portal de Seguridad V25.8</p>
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-6">Portal de Seguridad V25.10</p>
             
             <div class="w-full flex flex-col gap-4">
                 <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center shadow-inner">
@@ -328,14 +322,15 @@
                     </section>
                 </div>
 
-                <div id="wrapper-m4" class="hidden flex-col h-full gap-4 relative pb-2 overflow-hidden w-full min-h-[600px]">
+                <div id="wrapper-m4" class="hidden flex-col gap-4 relative pb-2 w-full min-h-[600px]">
                     <div class="w-full flex justify-between items-center bg-white p-3 rounded-lg shadow-sm border border-slate-200 gap-3 shrink-0">
                         <div class="flex items-center gap-3">
                             <div class="bg-slate-900 text-white w-8 h-8 rounded flex items-center justify-center font-black text-lg shadow-sm">4</div>
                             <div><h1 class="text-base font-black tracking-tight uppercase text-slate-900 leading-none">Plan de Acción Estratégico</h1><p class="text-[10px] font-bold text-slate-500 italic mt-0.5">Gestión inteligente, resultados medibles.</p></div>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="simularExtraccionM4()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3 py-2 rounded text-[10px] font-bold transition-colors shadow-sm uppercase hidden xl:block">⚡ Auto-Generar</button>
+                            <button onclick="generarPlanEstrategico()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3 py-2 rounded text-[10px] font-bold transition-colors shadow-sm uppercase hidden xl:block flex items-center gap-1">⚡ Auto-Generar</button>
+                            <button onclick="limpiarM4()" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-3 py-2 rounded text-[10px] font-bold transition-colors shadow-sm uppercase hidden xl:block flex items-center gap-1">🗑️ Limpiar</button>
                             <button onclick="toggleDashboardM4()" id="btn-toggle-dash" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-2 rounded text-[10px] font-bold transition-colors shadow-sm uppercase border border-slate-900"><span id="text-toggle-dash">Colapsar Panel</span></button>
                             <button onclick="toggleViewM4()" id="btn-toggle-view" class="bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 px-3 py-2 rounded text-[10px] font-bold transition-colors shadow-sm uppercase"><span id="text-toggle-view">Vista Kanban</span></button>
                             <button onclick="openTaskModalM4()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded text-[10px] font-black transition-colors shadow-sm uppercase tracking-wide">+ Nueva Tarea</button>
@@ -368,7 +363,7 @@
                     </div>
 
                     <div class="w-full flex-grow flex flex-col relative pb-1 mt-1 min-h-[450px]">
-                        <div id="view-table" class="bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col h-full transition-opacity duration-300 overflow-hidden">
+                        <div id="view-table" class="bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col transition-opacity duration-300">
                             <div class="p-3 border-b border-slate-200 flex flex-col md:flex-row justify-between items-center bg-slate-50 shrink-0 gap-2">
                                 <div class="flex items-center gap-2"><h2 class="text-[12px] font-black text-slate-800 uppercase tracking-tight ml-2">EJECUCIÓN TÁCTICA</h2><span class="bg-indigo-100 text-indigo-800 text-[10px] font-black px-2 py-0.5 rounded shadow-sm" id="table-task-count">0 TAREAS</span></div>
                                 <div class="flex gap-2">
@@ -377,19 +372,20 @@
                                 </div>
                             </div>
                             
-                            <div class="overflow-y-auto overflow-x-hidden custom-scrollbar flex-grow bg-slate-100">
+                            <div class="overflow-x-auto overflow-y-visible custom-scrollbar flex-grow bg-slate-100">
                                 <table class="table-compact w-full">
                                     <thead class="sticky top-0 bg-slate-100 shadow-sm z-10 border-b-2 border-slate-300">
                                         <tr>
-                                            <th class="table-header w-[4%] text-center pl-2 border-l border-slate-300">#</th>
-                                            <th class="table-header w-[22%]">TAREA</th>
-                                            <th class="table-header w-[25%]">DESCRIPCIÓN</th>
-                                            <th class="table-header w-[12%] text-center">RESPONSABLE</th>
-                                            <th class="table-header w-[9%] text-center">INICIO</th>
-                                            <th class="table-header w-[9%] text-center">LÍMITE</th>
-                                            <th class="table-header w-[11%]">KPI</th>
+                                            <th class="table-header w-[3%] text-center pl-2 border-l border-slate-300">#</th>
+                                            <th class="table-header w-[20%]">TAREA</th>
+                                            <th class="table-header w-[21%]">DESCRIPCIÓN</th>
+                                            <th class="table-header w-[11%] text-center">RESPONSABLE</th>
+                                            <th class="table-header w-[8%] text-center">INICIO</th>
+                                            <th class="table-header w-[8%] text-center">LÍMITE</th>
+                                            <th class="table-header w-[10%]">KPI</th>
                                             <th class="table-header w-[8%] text-center">PRIORIDAD</th>
-                                            <th class="table-header w-[8%] text-center pr-2 border-r border-slate-300">ESTADO</th>
+                                            <th class="table-header w-[8%] text-center">ESTADO</th>
+                                            <th class="table-header w-[3%] text-center pr-2 border-r border-slate-300"></th>
                                         </tr>
                                     </thead>
                                     <tbody id="table-body" class="text-xs text-slate-700 bg-white"></tbody>
@@ -429,9 +425,6 @@
     <script src="database.js"></script>
 
     <script>
-        // ============================================================================
-        // 1. BASE DE DATOS M3 Y ALGORITMOS 
-        // ============================================================================
         const m3QualitativeData = [
             { id: "sm1", title: "1. Identidad Demográfica", color: "bg-blue-600", icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z", q: [{ id: "q1", vital: false, text: "1. Rango de edad", opts: ["Niños/Teens", "Jóvenes (18-30)", "Adultos (31-50)", "Mayores (+51)"] }, { id: "q2", vital: false, text: "2. Estrato socioeconómico", opts: ["1", "2", "3", "4", "5"] }, { id: "q3", vital: false, text: "3. ¿Llega solo o acompañado?", opts: ["Solo", "Pareja", "Grupo familiar", "Amigos"] }, { id: "q4", vital: false, text: "4. Estilo visual", opts: ["Formal", "Casual", "Deportivo", "Alternativo"] }] },
             { id: "sm2", title: "2. Dinámica de Grupo", color: "bg-blue-500", icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z", q: [{ id: "q5", vital: false, text: "5. Tamaño del grupo", opts: ["1", "2", "3-4", "5+"] }, { id: "q6", vital: false, text: "6. Rol del líder", opts: ["Decisor", "Influenciador", "Pasivo"] }, { id: "q7", vital: true, text: "7. Nivel de interacción", opts: ["Alta", "Media", "Baja"] }, { id: "q8", vital: false, text: "8. Actitud predominante", opts: ["Entusiasta", "Indiferente", "Crítica", "Curiosa"] }] },
@@ -471,9 +464,6 @@
             setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        // ============================================================================
-        // 2. SISTEMA DE LOGIN Y HARD RESET
-        // ============================================================================
         function handleLogin() {
             const p = document.getElementById('login-pass').value.trim();
             if (p === '14697470') {
@@ -484,15 +474,12 @@
                 wolfOverlay.classList.add('active');
                 
                 setTimeout(() => {
-                    // Esta es la línea maestra que faltaba: Permite que el sistema cargue y se muestre.
                     document.getElementById('login-wrapper').style.display = 'none';
                     document.getElementById('app-screen').style.display = 'flex';
-                    
-                    // Asegurar la transparencia para la transición CSS
                     setTimeout(() => { document.getElementById('app-screen').style.opacity = '1'; }, 50);
 
                     sessionStorage.setItem('wolf_auth', 'true');
-                    document.documentElement.classList.add('logged-in'); // Mantiene la página visible al hacer F5
+                    document.documentElement.classList.add('logged-in'); 
                     
                     setTimeout(() => { wolfOverlay.classList.remove('active'); }, 1500);
                 }, 600);
@@ -516,9 +503,6 @@
             }
         }
 
-        // ============================================================================
-        // 3. PERSISTENCIA SUPABASE Y FEEDBACK VISUAL
-        // ============================================================================
         const supabaseUrlGlobal = 'https://lujjfbknidaioocmcvhc.supabase.co'; 
         const supabaseKeyGlobal = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1ampmYmtuaWRhaW9vY21jdmhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxOTcxMjIsImV4cCI6MjA5ODc3MzEyMn0.JpWNK6bJYIFrFGHjdhF_whhiovStOmqdFtaHf4kJoWo';
         const supabaseClient = window.supabase ? window.supabase.createClient(supabaseUrlGlobal, supabaseKeyGlobal) : null;
@@ -623,9 +607,6 @@
             }
         }
 
-        // ============================================================================
-        // 4. FUNCIONES COMUNES M1 Y M2
-        // ============================================================================
         window.syncRivals = function(type, value) { document.querySelectorAll(`.sync-${type}`).forEach(el => { if(el.value !== value) el.value = value; }); updateHeaders(); }
         window.toggleRivalLock = function(target) {
             let sampleInput = document.querySelector(`.sync-${target}`); if(!sampleInput) return; let isLocked = sampleInput.readOnly;
@@ -709,7 +690,6 @@
             } catch (err) { }
         }
 
-        // M2
         function renderTilesM2() {
             const container = document.getElementById('tiles-container-m2'); const pool = document.getElementById('hidden-pool-m2'); container.innerHTML = ''; pool.innerHTML = '';
             if(!currentBenchMatrix) return;
@@ -765,9 +745,6 @@
             } catch (err) { }
         };
 
-        // ============================================================================
-        // 6. MÓDULO 3: ETNOGRAFÍA, CLÚSTERES Y KILL-SWITCHES
-        // ============================================================================
         function initM3() {
             const container = document.getElementById('tiles-container-m3'); const pool = document.getElementById('hidden-pool-m3'); 
             container.innerHTML = ''; pool.innerHTML = '';
@@ -877,9 +854,6 @@
             setTimeout(() => { document.getElementById('dashboard-section-m3').scrollIntoView({ behavior: 'smooth' }); }, 100);
         }
 
-        // ============================================================================
-        // 7. MODALES GLOBALES
-        // ============================================================================
         window.openDynamicModal = function(mod, id, title, colorClass, iconSvg = '') {
             activeModalContext = { module: mod, id: id };
             document.getElementById('section-modal-title').innerText = title; document.getElementById('section-modal-header').className = `px-8 py-5 flex justify-between items-center transition-colors duration-300 ${colorClass}`;
@@ -910,9 +884,6 @@
             }
         };
 
-        // ============================================================================
-        // 8. RESUMEN EJECUTIVO Y PDF INTELIGENTE
-        // ============================================================================
         window.debilidadesGlobales = []; window.fortalezasGlobales = [];
 
         window.ejecutarResumenEjecutivo = function() {
@@ -956,9 +927,130 @@
         }
 
         // ============================================================================
-        // 9. MÓDULO 4: SPREADSHEET (9 COLS) Y KANBAN
+        // MOTOR DE AUTOGENERACIÓN (MÓDULO 4) - NUEVA ARQUITECTURA
         // ============================================================================
-        window.m4PlanAccion = []; window.m4FilteredPlan = []; window.m4CurrentPage = 1; window.m4ItemsPerPage = 10; window.m4IsKanbanView = false; window.m4SearchTerm = "";
+        window.m4PlanAccion = []; window.m4FilteredPlan = []; 
+        window.m4CurrentPage = 1; 
+        window.m4ItemsPerPage = 20; // ⚙️ [PARCHE APLICADO] Aumentado a 20 registros por vista
+        window.m4IsKanbanView = false; window.m4SearchTerm = "";
+
+        window.generarPlanEstrategico = function() {
+            if(!confirm("Esto analizará los Módulos 1, 2 y 3 para generar tareas automáticamente. Las tareas existentes se mantendrán. ¿Deseas continuar?")) return;
+            
+            let nuevasTareas = [];
+            const todayStr = new Date().toISOString().split('T')[0];
+            
+            if(typeof diagnosticData !== 'undefined') {
+                diagnosticData.forEach(sec => {
+                    sec.questions.forEach((q, i) => {
+                        let num = document.getElementById(`${sec.id}_${i}`)?.value;
+                        if(num === "1" || num === "2" || num === "3") {
+                            let prio = num === "1" ? "Alta" : (num === "2" ? "Media" : "Baja");
+                            nuevasTareas.push({
+                                id: Date.now() + Math.floor(Math.random() * 10000),
+                                code: `M1-${sec.id}-${i}`,
+                                priority: prio, status: "Pendiente",
+                                title: `M1: ${q.text}`,
+                                desc: `Mejora requerida (Calificación: ${num}/5) detectada en auditoría operativa.`,
+                                owner: "Gerencia", start: todayStr, end: "", kpi: "Operación", justification: ""
+                            });
+                        }
+                    });
+                });
+            }
+            
+            if(currentBenchMatrix && currentBenchMatrix.length > 0) {
+                currentBenchMatrix.forEach((cat, idx) => {
+                    cat.q.forEach((q, qIdx) => {
+                        let id = `b_${idx}_${qIdx}`;
+                        let vMe = document.querySelector(`input[name="${id}_me"]:checked`)?.value;
+                        let vC1 = document.querySelector(`input[name="${id}_c1"]:checked`)?.value;
+                        let vC2 = document.querySelector(`input[name="${id}_c2"]:checked`)?.value;
+                        
+                        if(vMe) {
+                            let valMe = parseInt(vMe);
+                            let bestRival = Math.max(parseInt(vC1 || 0), parseInt(vC2 || 0));
+                            
+                            if(valMe === 1) {
+                                nuevasTareas.push({
+                                    id: Date.now() + Math.floor(Math.random() * 10000),
+                                    code: `M2-${idx}-${qIdx}`, priority: "Alta", status: "Pendiente",
+                                    title: `M2: ${q.title}`,
+                                    desc: `Deficiencia (1) frente al mercado en: ${cat.category}.`,
+                                    owner: "Marketing", start: todayStr, end: "", kpi: "Competitividad", justification: ""
+                                });
+                            } else if (valMe === 2 && bestRival === 3) {
+                                nuevasTareas.push({
+                                    id: Date.now() + Math.floor(Math.random() * 10000),
+                                    code: `M2-${idx}-${qIdx}`, priority: "Media", status: "Pendiente",
+                                    title: `M2 Brecha: ${q.title}`,
+                                    desc: `Nivel aceptable (2) pero la competencia es óptima (3) en: ${cat.category}.`,
+                                    owner: "Marketing", start: todayStr, end: "", kpi: "Competitividad", justification: ""
+                                });
+                            }
+                        }
+                    });
+                });
+            }
+            
+            let indVal = document.getElementById('industry-selector').value;
+            if(indVal && m3Obs.length > 0) {
+                let cluster = getClusterM3(indVal);
+                m3QualitativeData.forEach(mod => {
+                    let isFocus = cluster.focus.includes(mod.id);
+                    mod.q.forEach(q => {
+                        if(q.vital) {
+                            let meObs = m3Obs.filter(o => o.target === 'me');
+                            if(meObs.length > 0) {
+                                let fricciones = 0;
+                                meObs.forEach(obs => {
+                                    let idx = q.opts.indexOf(obs[q.id]);
+                                    if(idx >= q.opts.length - 2 && obs[q.id] !== "N/A") fricciones++;
+                                });
+                                let percFriccion = fricciones / meObs.length;
+                                let umbral = isFocus ? 0.2 : 0.4;
+                                if(percFriccion > umbral) {
+                                    nuevasTareas.push({
+                                        id: Date.now() + Math.floor(Math.random() * 10000),
+                                        code: `M3-${mod.id}-${q.id}`, priority: "Alta", status: "Pendiente",
+                                        title: `M3 Fricción: ${q.text.replace(/^\d+\.\s*/, '')}`,
+                                        desc: `Fallo detectado en ${(percFriccion*100).toFixed(0)}% de la muestra. Clúster: ${cluster.name}.`,
+                                        owner: "Operaciones", start: todayStr, end: "", kpi: "Experiencia", justification: ""
+                                    });
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+            
+            if(nuevasTareas.length > 0) {
+                let agregadas = 0;
+                nuevasTareas.forEach(nt => {
+                    if(!window.m4PlanAccion.find(t => t.code === nt.code)) {
+                        window.m4PlanAccion.unshift(nt);
+                        agregadas++;
+                    }
+                });
+                if(agregadas > 0) {
+                    showToast(`✅ Se autogeneraron ${agregadas} tareas estratégicas.`, "success");
+                    triggerAutoSave(); window.renderAllM4();
+                } else {
+                    showToast("ℹ️ El plan ya contiene todas las tareas detectadas.", "warning");
+                }
+            } else {
+                showToast("✅ No se detectaron problemas para autogenerar en los módulos.", "success");
+            }
+        }
+
+        window.limpiarM4 = function() {
+            if(confirm("⚠ ATENCIÓN: Se eliminarán TODAS las tareas del Plan de Acción. ¿Estás absolutamente seguro de continuar?")) {
+                window.m4PlanAccion = [];
+                triggerAutoSave();
+                window.renderAllM4();
+                showToast("🗑️ Plan de acción vaciado por completo.", "success");
+            }
+        }
 
         window.toggleDashboardM4 = function() { const dash = document.getElementById('dashboard-container'); const btnText = document.getElementById('text-toggle-dash'); if(dash.classList.contains('hidden')) { dash.classList.remove('hidden'); btnText.innerText = "Colapsar Panel"; } else { dash.classList.add('hidden'); btnText.innerText = "Expandir Panel"; } }
         window.autoResizeM4 = function(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight) + 'px'; }
@@ -973,10 +1065,27 @@
             return { status: baseStatus, isVencida: false, daysLeft: diffDays, kanbanStatus: baseStatus };
         }
 
+        // ⚙️ [PARCHE APLICADO] Ajuste de clases dinámicas para alternar scroll
         window.toggleViewM4 = function() {
             window.m4IsKanbanView = !window.m4IsKanbanView; const btnView = document.getElementById('text-toggle-view');
-            if(window.m4IsKanbanView) { btnView.innerHTML = `Vista Tabla`; document.getElementById('view-table').classList.add('hidden'); document.getElementById('view-kanban').classList.remove('hidden'); document.getElementById('view-kanban').classList.add('flex'); } 
-            else { btnView.innerHTML = `Vista Kanban`; document.getElementById('view-kanban').classList.remove('flex'); document.getElementById('view-kanban').classList.add('hidden'); document.getElementById('view-table').classList.remove('hidden'); }
+            const wrapperM4 = document.getElementById('wrapper-m4');
+            
+            if(window.m4IsKanbanView) { 
+                btnView.innerHTML = `Vista Tabla`; 
+                document.getElementById('view-table').classList.add('hidden'); 
+                document.getElementById('view-kanban').classList.remove('hidden'); 
+                document.getElementById('view-kanban').classList.add('flex'); 
+                // Añade altura fija para que el Kanban pueda escrollear internamente
+                wrapperM4.classList.add('h-full', 'overflow-hidden');
+            } 
+            else { 
+                btnView.innerHTML = `Vista Kanban`; 
+                document.getElementById('view-kanban').classList.remove('flex'); 
+                document.getElementById('view-kanban').classList.add('hidden'); 
+                document.getElementById('view-table').classList.remove('hidden'); 
+                // Elimina altura fija para que la tabla pueda crecer natural (Scroll Externo)
+                wrapperM4.classList.remove('h-full', 'overflow-hidden');
+            }
             window.renderAllM4();
         }
 
@@ -1025,15 +1134,16 @@
 
                 tbody.innerHTML += `
                     <tr class="table-row ${prioBorder}">
-                        <td class="p-1 px-1.5 align-middle text-center font-black text-slate-400 text-[10px] w-[4%]">${startIdx + i + 1}</td>
-                        <td class="p-1 px-1.5 align-top w-[22%]"><textarea rows="2" oninput="window.autoResizeM4(this)" onchange="window.updateTaskInlineM4(${t.id}, 'title', this.value)" class="textarea-cell font-bold text-slate-800">${t.title}</textarea></td>
-                        <td class="p-1 px-1.5 align-top w-[25%]"><textarea rows="2" oninput="window.autoResizeM4(this)" onchange="window.updateTaskInlineM4(${t.id}, 'desc', this.value)" class="textarea-cell text-slate-500">${t.desc}</textarea></td>
-                        <td class="p-1 px-1.5 align-middle w-[12%]"><input type="text" value="${t.owner}" onchange="window.updateTaskInlineM4(${t.id}, 'owner', this.value)" class="input-cell font-bold text-blue-700 text-center"></td>
-                        <td class="p-1 px-1.5 align-middle w-[9%]"><input type="date" value="${t.start}" onchange="window.updateTaskInlineM4(${t.id}, 'start', this.value)" class="input-cell text-center"></td>
-                        <td class="p-1 px-1.5 align-middle w-[9%]"><input type="date" value="${t.end}" onchange="window.updateTaskInlineM4(${t.id}, 'end', this.value)" class="input-cell text-center ${comp.isVencida ? 'text-red-600 font-bold' : ''}"></td>
-                        <td class="p-1 px-1.5 align-top w-[11%]"><textarea rows="2" oninput="window.autoResizeM4(this)" onchange="window.updateTaskInlineM4(${t.id}, 'kpi', this.value)" class="textarea-cell text-center">${t.kpi}</textarea></td>
+                        <td class="p-1 px-1.5 align-middle text-center font-black text-slate-400 text-[10px] w-[3%]">${startIdx + i + 1}</td>
+                        <td class="p-1 px-1.5 align-top w-[20%]"><textarea rows="2" oninput="window.autoResizeM4(this)" onchange="window.updateTaskInlineM4(${t.id}, 'title', this.value)" class="textarea-cell font-bold text-slate-800">${t.title}</textarea></td>
+                        <td class="p-1 px-1.5 align-top w-[21%]"><textarea rows="2" oninput="window.autoResizeM4(this)" onchange="window.updateTaskInlineM4(${t.id}, 'desc', this.value)" class="textarea-cell text-slate-500">${t.desc}</textarea></td>
+                        <td class="p-1 px-1.5 align-middle w-[11%]"><input type="text" value="${t.owner}" onchange="window.updateTaskInlineM4(${t.id}, 'owner', this.value)" class="input-cell font-bold text-blue-700 text-center"></td>
+                        <td class="p-1 px-1.5 align-middle w-[8%]"><input type="date" value="${t.start}" onchange="window.updateTaskInlineM4(${t.id}, 'start', this.value)" class="input-cell text-center"></td>
+                        <td class="p-1 px-1.5 align-middle w-[8%]"><input type="date" value="${t.end}" onchange="window.updateTaskInlineM4(${t.id}, 'end', this.value)" class="input-cell text-center ${comp.isVencida ? 'text-red-600 font-bold' : ''}"></td>
+                        <td class="p-1 px-1.5 align-top w-[10%]"><textarea rows="2" oninput="window.autoResizeM4(this)" onchange="window.updateTaskInlineM4(${t.id}, 'kpi', this.value)" class="textarea-cell text-center">${t.kpi}</textarea></td>
                         <td class="p-1 px-1.5 align-middle w-[8%]"><select onchange="window.updateTaskInlineM4(${t.id}, 'priority', this.value)" class="input-cell uppercase text-[9px] text-center cursor-pointer hover:bg-slate-50"><option value="Alta" ${t.priority==='Alta'?'selected':''}>Alta</option><option value="Media" ${t.priority==='Media'?'selected':''}>Media</option><option value="Baja" ${t.priority==='Baja'?'selected':''}>Baja</option></select></td>
-                        <td class="p-1 px-1.5 align-middle text-center relative pr-4 w-[8%]"><select onchange="window.handleStatusChangeM4(this, ${t.id}, '${t.status}')" class="status-select shadow-sm border ${sClass}"><option value="Pendiente" ${t.status==='Pendiente'?'selected':''}>PENDIENTE</option><option value="Proceso" ${t.status==='Proceso'?'selected':''}>PROCESO</option><option value="Cumplido" ${t.status==='Cumplido'?'selected':''}>CUMPLIDO</option><option value="NoCumplido" ${t.status==='NoCumplido'?'selected':''}>FALTA</option></select><div class="mt-0.5 text-[8px] font-bold ${comp.isVencida ? 'text-red-500' : 'hidden'}">VENCIDA</div>${justHtml}</td>
+                        <td class="p-1 px-1.5 align-middle text-center relative pr-2 w-[8%]"><select onchange="window.handleStatusChangeM4(this, ${t.id}, '${t.status}')" class="status-select shadow-sm border ${sClass}"><option value="Pendiente" ${t.status==='Pendiente'?'selected':''}>PENDIENTE</option><option value="Proceso" ${t.status==='Proceso'?'selected':''}>PROCESO</option><option value="Cumplido" ${t.status==='Cumplido'?'selected':''}>CUMPLIDO</option><option value="NoCumplido" ${t.status==='NoCumplido'?'selected':''}>FALTA</option></select><div class="mt-0.5 text-[8px] font-bold ${comp.isVencida ? 'text-red-500' : 'hidden'}">VENCIDA</div>${justHtml}</td>
+                        <td class="p-1 align-middle text-center pr-2 w-[3%]"><button onclick="window.deleteTaskM4(${t.id})" class="text-slate-400 hover:text-red-600 transition-colors" title="Eliminar tarea"><svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td>
                     </tr>`;
             });
             document.getElementById('pagination-info').innerText = `Mostrando ${window.m4FilteredPlan.length===0?0:startIdx+1} - ${Math.min(startIdx + window.m4ItemsPerPage, window.m4FilteredPlan.length)} de ${window.m4FilteredPlan.length}`;
@@ -1081,26 +1191,13 @@
             proximas.sort((a, b) => a.days - b.days); const expList = document.getElementById('expiring-list'); expList.innerHTML = '';
             if(proximas.length === 0) expList.innerHTML = `<div class="h-full flex items-center justify-center"><p class="text-[10px] text-slate-400 italic text-center">Sin vencimientos.</p></div>`; else { proximas.slice(0,3).forEach(p => { let color = p.days <= 3 ? 'text-red-500 bg-red-50 border-red-100' : 'text-amber-600 bg-amber-50 border-amber-100'; expList.innerHTML += `<li class="flex justify-between items-center bg-white border border-slate-100 p-1.5 rounded shadow-sm shrink-0"><div class="flex flex-col overflow-hidden"><span class="text-[10px] font-bold text-slate-700 truncate leading-tight">${p.title}</span><span class="text-[8px] text-slate-500 font-bold">${p.owner || '-'}</span></div><div class="flex items-center gap-1 border ${color} px-1.5 py-0.5 rounded text-[9px] font-black shrink-0"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ${p.days} d</div></li>`; }); }
         }
-
-        window.simularExtraccionM4 = function() {
-            if(confirm("Se inyectarán hallazgos de prueba. ¿Proceder?")) {
-                const todayStr = new Date().toISOString().split('T')[0];
-                let datePast = new Date(); datePast.setDate(datePast.getDate() - 5); const pastStr = datePast.toISOString().split('T')[0];
-                window.m4PlanAccion = [
-                    { id: Date.now()+1, code: "M1-1-2", priority: "Alta", status: "Pendiente", title: "Definir Propuesta Única de Valor", desc: "Falta documento matriz.", owner: "Gerencia", start: todayStr, end: "", kpi: "Documento", justification: "" },
-                    { id: Date.now()+4, code: "M3-2-2", priority: "Media", status: "NoCumplido", title: "Mejorar exhibición vitrinas", desc: "Exhibición obsoleta.", owner: "Admin", start: pastStr, end: pastStr, kpi: "Ventas", justification: "Falta de stock" }
-                ]; triggerAutoSave(); window.renderAllM4();
-            }
-        }
+        
         window.exportExcelM4 = function() {
             if(window.m4PlanAccion.length === 0) return showToast("⚠️ No hay datos para exportar.", "warning");
             const data = window.m4PlanAccion.map((t, idx) => ({ "#": idx+1, "Tarea": t.title, "Descripción": t.desc, "Responsable": t.owner, "Inicio": t.start, "Límite": t.end, "KPI": t.kpi, "Estado": window.getComputedStateM4(t).status, "Prioridad": t.priority, "Justificación": t.justification || "N/A" }));
             const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "PlanDeAccion"); XLSX.writeFile(wb, "Plan_Accion_Consultoria.xlsx");
         }
 
-        // ============================================================================
-        // 10. MOTOR DE ARRANQUE E INICIALIZACIÓN GLOBAL
-        // ============================================================================
         window.onload = () => { 
             setSyncStatus('idle'); 
             if (typeof diagnosticData === 'undefined') { showToast("⚠️ 'database.js' no detectado.", "error"); } else { renderTilesM1(); }
